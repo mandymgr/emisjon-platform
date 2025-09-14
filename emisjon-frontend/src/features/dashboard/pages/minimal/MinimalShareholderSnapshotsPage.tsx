@@ -284,25 +284,25 @@ const MinimalShareholderSnapshotsPage = () => {
                       <div>
                         <p className="text-neutral-600">Shareholders</p>
                         <p className="font-medium text-neutral-900">
-                          {snapshot.totalShareholders.toLocaleString()}
+                          {snapshot.totalShareholders?.toLocaleString() || '0'}
                         </p>
                       </div>
                       <div>
                         <p className="text-neutral-600">Total Shares</p>
                         <p className="font-medium text-neutral-900">
-                          {snapshot.totalShares.toLocaleString()}
+                          {snapshot.totalShares?.toLocaleString() || '0'}
                         </p>
                       </div>
                       <div>
                         <p className="text-neutral-600">Avg. per Holder</p>
                         <p className="font-medium text-neutral-900">
-                          {snapshot.avgSharesPerHolder.toLocaleString()}
+                          {snapshot.avgSharesPerHolder?.toLocaleString() || '0'}
                         </p>
                       </div>
                       <div>
                         <p className="text-neutral-600">Largest Holding</p>
                         <p className="font-medium text-neutral-900">
-                          {snapshot.largestHolding.toLocaleString()}
+                          {snapshot.largestHolding?.toLocaleString() || '0'}
                         </p>
                       </div>
                     </div>

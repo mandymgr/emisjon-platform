@@ -223,19 +223,19 @@ const MinimalMySubscriptionsPage = () => {
                       <div>
                         <p className="text-neutral-600">Shares Requested</p>
                         <p className="font-medium text-neutral-900">
-                          {subscription.sharesRequested.toLocaleString()}
+                          {subscription.sharesRequested?.toLocaleString() || '0'}
                         </p>
                       </div>
                       <div>
                         <p className="text-neutral-600">Price per Share</p>
                         <p className="font-medium text-neutral-900">
-                          ${subscription.pricePerShare.toFixed(2)}
+                          ${subscription.pricePerShare?.toFixed(2) || '0.00'}
                         </p>
                       </div>
                       <div className="col-span-2">
                         <p className="text-neutral-600">Total Investment</p>
                         <p className="font-medium text-neutral-900 text-lg">
-                          ${subscription.totalValue.toLocaleString()}
+                          ${subscription.totalValue?.toLocaleString() || '0'}
                         </p>
                       </div>
                     </div>

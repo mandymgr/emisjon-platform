@@ -66,9 +66,9 @@ const MinimalShareholdersPage = () => {
   // Filter and sort shareholders
   useEffect(() => {
     const filtered = shareholders.filter(shareholder =>
-      shareholder.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      shareholder.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      shareholder.shareClass.toLowerCase().includes(searchTerm.toLowerCase())
+      shareholder.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      shareholder.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      shareholder.shareClass?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     filtered.sort((a, b) => {
@@ -305,13 +305,13 @@ const MinimalShareholdersPage = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-gray-900">
-                      {shareholder.shareCount.toLocaleString('nb-NO')}
+                      {shareholder.shareCount?.toLocaleString('nb-NO') || '0'}
                     </div>
-                    <div className="text-sm text-gray-500">av {totalShares.toLocaleString('nb-NO')}</div>
+                    <div className="text-sm text-gray-500">av {totalShares?.toLocaleString('nb-NO') || '0'}</div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-gray-900">
-                      {shareholder.ownershipPercentage.toFixed(2)}%
+                      {shareholder.ownershipPercentage?.toFixed(2) || '0.00'}%
                     </div>
                   </td>
                   <td className="px-6 py-4">

@@ -4,6 +4,7 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { logout } from '../../auth/authSlice';
 import { useTheme } from '@/contexts/ThemeContext';
+import VersionInfo from '@/components/VersionInfo';
 import {
   LayoutDashboard,
   Users,
@@ -136,20 +137,12 @@ const MinimalDashboardLayout = () => {
           aria-label="Main navigation"
         >
           {/* Scandinavian Brand */}
-          <div className={`flex h-16 items-center border-b border-sidebar-border relative ${isSidebarCollapsed ? 'justify-center' : 'gap-3 px-5'}`}>
-            {isSidebarCollapsed ? (
-              <img
-                src="/oblinor-new-logo.svg"
-                alt="Oblinor"
-                className="h-8 w-8 text-teal-700"
-              />
-            ) : (
-              <img
-                src="/oblinor-new-logo.svg"
-                alt="Oblinor"
-                className="h-8 w-auto text-teal-700"
-              />
-            )}
+          <div className="flex h-24 items-center justify-center border-b border-sidebar-border relative py-6">
+            <img
+              src="/logo.png"
+              alt="Logo"
+              className="h-12 w-12"
+            />
 
             {/* Mobile close button */}
             <button
@@ -356,6 +349,7 @@ const MinimalDashboardLayout = () => {
               <LogOut className="h-5 w-5 text-sidebar-foreground/50" />
               {!isSidebarCollapsed && <span>Sign out</span>}
             </button>
+            {!isSidebarCollapsed && <VersionInfo />}
           </div>
         </aside>
 

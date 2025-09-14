@@ -64,8 +64,8 @@ const MinimalUsersPage = () => {
 
   useEffect(() => {
     let filtered = users.filter(user =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     if (roleFilter !== 'ALL') {
@@ -248,7 +248,7 @@ const MinimalUsersPage = () => {
                     <div className="flex items-center space-x-3">
                       <div className="h-8 w-8 bg-teal-100 rounded-full flex items-center justify-center">
                         <span className="text-xs font-medium text-teal-700">
-                          {user.name.charAt(0).toUpperCase()}
+                          {user.name?.charAt(0).toUpperCase() || 'U'}
                         </span>
                       </div>
                       <div>
