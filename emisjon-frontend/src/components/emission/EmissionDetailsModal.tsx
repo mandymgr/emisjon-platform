@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { FiDatabase, FiActivity, FiDownload } from 'react-icons/fi';
 import Modal from '@/components/ui/Modal';
 import { Button } from '@/components/ui/button';
@@ -73,10 +73,11 @@ export default function EmissionDetailsModal({
   };
 
   const totalValue = emission.newSharesOffered * emission.pricePerShare;
-  const dilution = ((emission.newSharesOffered / emission.sharesAfter) * 100).toFixed(2);
+  const dilution = emission.sharesAfter ? ((emission.newSharesOffered / emission.sharesAfter) * 100).toFixed(2) : '0';
 
   return (
-    <Modal
+    <Fragment>
+      <Modal
       isOpen={isOpen}
       onClose={onClose}
       title={emission.title}
@@ -348,32 +349,32 @@ export default function EmissionDetailsModal({
             </div>
           )}
     </Modal>
-      
-      {/* Modals */}
-      {showSnapshotModal && emission && (
-        <SnapshotModal
-          isOpen={showSnapshotModal}
-          emissionId={emission.id}
-          emissionTitle={emission.title}
-          onClose={() => setShowSnapshotModal(false)}
-        />
-      )}
-      {showAuditLogModal && emission && (
-        <AuditLogModal
-          isOpen={showAuditLogModal}
-          emissionId={emission.id}
-          emissionTitle={emission.title}
-          onClose={() => setShowAuditLogModal(false)}
-        />
-      )}
 
-      {/* Error Alert Dialog */}
-      <ErrorAlert
-        open={alertError.open}
-        onOpenChange={hideError}
-        title={alertError.title}
-        message={alertError.message}
+    {/* Modals */}
+    {showSnapshotModal && emission && (
+      <SnapshotModal
+        isOpen={showSnapshotModal}
+        emissionId={emission.id}
+        emissionTitle={emission.title}
+        onClose={() => setShowSnapshotModal(false)}
       />
-    </div>
+    )}
+    {showAuditLogModal && emission && (
+      <AuditLogModal
+        isOpen={showAuditLogModal}
+        emissionId={emission.id}
+        emissionTitle={emission.title}
+        onClose={() => setShowAuditLogModal(false)}
+      />
+    )}
+
+    {/* Error Alert Dialog */}
+    <ErrorAlert
+      open={alertError.open}
+      onOpenChange={hideError}
+      title={alertError.title}
+      message={alertError.message}
+    />
+    </Fragment>
   );
 }

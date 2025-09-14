@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import PageLayout from '@/components/layout/PageLayout';
 import { getAllSnapshots } from '@/services/snapshotService';
-import { getAllEmissions } from '../services/emissionsService';
+import { getAllEmissions } from '../../services/emissionsService';
+import type { Emission, ShareholderSnapshot } from '@/types/emission';
 import {
   Camera,
   Calendar,
@@ -27,11 +28,21 @@ interface SnapshotStats {
   avgShareholding: number;
 }
 
+interface EnhancedSnapshot extends ShareholderSnapshot {
+  emissionId: string;
+  emissionTitle: string;
+  totalShareholders: number;
+  avgSharesPerHolder: number;
+  largestHolding: number;
+  reason: string;
+  status: string;
+}
+
 const MinimalShareholderSnapshotsPage = () => {
   const { user } = useAppSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);
-  const [snapshots, setSnapshots] = useState<any[]>([]);
-  const [emissions, setEmissions] = useState<any[]>([]);
+  const [snapshots, setSnapshots] = useState<EnhancedSnapshot[]>([]);
+  const [emissions, setEmissions] = useState<Emission[]>([]);
   const [stats, setStats] = useState<SnapshotStats | null>(null);
   const [selectedEmission, setSelectedEmission] = useState<string>('all');
 
@@ -225,7 +236,7 @@ const MinimalShareholderSnapshotsPage = () => {
               className="px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
             >
               <option value="all">All Emissions</option>
-              {emissions.map((emission: any) => (
+              {emissions.map((emission: Emission) => (
                 <option key={emission.id} value={emission.id}>
                   {emission.title || `Emission ${emission.id}`}
                 </option>
@@ -247,7 +258,7 @@ const MinimalShareholderSnapshotsPage = () => {
         <div className="p-8">
           {filteredSnapshots.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-              {filteredSnapshots.map((snapshot: any) => (
+              {filteredSnapshots.map((snapshot: EnhancedSnapshot) => (
                 <div key={snapshot.id} className="border border-neutral-200 hover:border-neutral-400 transition-colors">
                   {/* Header */}
                   <div className="p-6 border-b border-neutral-100">

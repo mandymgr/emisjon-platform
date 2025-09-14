@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import PageLayout from '@/components/layout/PageLayout';
-import { getAllShareholders } from '../services/shareholdersService';
+import { getAllShareholders } from '../../services/shareholdersService';
+import type { Shareholder } from '@/components/shareholder/types';
 import {
   TrendingUp,
   Shield,
@@ -37,7 +38,7 @@ const MinimalTradingPage = () => {
   const { user } = useAppSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
-  const [, setShareholders] = useState<any[]>([]);
+  const [, setShareholders] = useState<Shareholder[]>([]);
   const [marketStats, setMarketStats] = useState<MarketStats | null>(null);
   const [recentTrades, setRecentTrades] = useState<TradeOrder[]>([]);
 

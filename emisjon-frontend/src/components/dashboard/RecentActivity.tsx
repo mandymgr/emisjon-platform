@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { cn } from '@/components/ui/primitive';
 import {
   EditIcon,

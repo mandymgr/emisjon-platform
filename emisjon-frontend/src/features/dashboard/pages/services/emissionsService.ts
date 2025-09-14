@@ -1,101 +1,70 @@
-// Mock service for emissions data
+// Mock service for emissions data - matches the real Emission interface
 export interface Emission {
   id: string;
-  name: string;
-  description: string;
-  status: 'ACTIVE' | 'CLOSED' | 'PENDING' | 'DRAFT';
-  totalShares: number;
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  newSharesOffered: number;
   pricePerShare: number;
-  totalValue: number;
-  subscriptions: number;
-  openingDate: string;
-  closingDate?: string;
-  minimumInvestment: number;
-  maximumInvestment?: number;
-  category: 'TECH' | 'ENERGY' | 'HEALTHCARE' | 'FINANCE' | 'OTHER';
-  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  totalValue?: number;
+  status: 'PREVIEW' | 'ACTIVE' | 'COMPLETED' | 'FINALIZED' | 'DRAFT' | 'CLOSED' | 'FUNDED' | 'CANCELLED';
+  sharesBefore?: number;
+  sharesAfter?: number;
+  isPreview?: boolean;
+  presentationFileUrl?: string;
+  finalizedAt?: string | null;
+  totalSharesSubscribed?: number;
+  createdAt?: string;
 }
 
 // Mock data
 const mockEmissions: Emission[] = [
   {
     id: '1',
-    name: 'Grønn Energi AS - Serie A',
+    title: 'Grønn Energi AS - Serie A',
     description: 'Investering i fornybar energi og solcelleteknologi for framtiden',
     status: 'ACTIVE',
-    totalShares: 100000,
+    newSharesOffered: 100000,
     pricePerShare: 150,
     totalValue: 15000000,
-    subscriptions: 234,
-    openingDate: '2024-08-01T00:00:00Z',
-    closingDate: '2024-12-31T23:59:59Z',
-    minimumInvestment: 1000,
-    maximumInvestment: 500000,
-    category: 'ENERGY',
-    riskLevel: 'MEDIUM'
+    totalSharesSubscribed: 23400,
+    startDate: '2024-08-01T00:00:00Z',
+    endDate: '2024-12-31T23:59:59Z',
+    sharesBefore: 500000,
+    sharesAfter: 600000,
+    createdAt: '2024-07-20T00:00:00Z'
   },
   {
     id: '2',
-    name: 'TechNor Innovation - Vekstkapital',
+    title: 'TechNor Innovation - Vekstkapital',
     description: 'Norsk teknologi-startup innen AI og maskinlæring',
     status: 'ACTIVE',
-    totalShares: 50000,
+    newSharesOffered: 50000,
     pricePerShare: 300,
     totalValue: 15000000,
-    subscriptions: 156,
-    openingDate: '2024-07-15T00:00:00Z',
-    closingDate: '2024-11-15T23:59:59Z',
-    minimumInvestment: 5000,
-    maximumInvestment: 1000000,
-    category: 'TECH',
-    riskLevel: 'HIGH'
+    totalSharesSubscribed: 15600,
+    startDate: '2024-07-15T00:00:00Z',
+    endDate: '2024-11-15T23:59:59Z',
+    sharesBefore: 200000,
+    sharesAfter: 250000,
+    createdAt: '2024-07-01T00:00:00Z'
   },
   {
     id: '3',
-    name: 'MedTech Solutions - Ekspansjon',
+    title: 'MedTech Solutions - Ekspansjon',
     description: 'Medisinsk teknologi for bedre helsevesen',
-    status: 'CLOSED',
-    totalShares: 75000,
+    status: 'COMPLETED',
+    newSharesOffered: 75000,
     pricePerShare: 200,
     totalValue: 15000000,
-    subscriptions: 289,
-    openingDate: '2024-03-01T00:00:00Z',
-    closingDate: '2024-08-31T23:59:59Z',
-    minimumInvestment: 2000,
-    maximumInvestment: 750000,
-    category: 'HEALTHCARE',
-    riskLevel: 'MEDIUM'
-  },
-  {
-    id: '4',
-    name: 'FinanceFlow - Digital Banking',
-    description: 'Neste generasjon digital bankløsninger',
-    status: 'PENDING',
-    totalShares: 80000,
-    pricePerShare: 250,
-    totalValue: 20000000,
-    subscriptions: 0,
-    openingDate: '2024-10-01T00:00:00Z',
-    closingDate: '2025-03-31T23:59:59Z',
-    minimumInvestment: 3000,
-    maximumInvestment: 800000,
-    category: 'FINANCE',
-    riskLevel: 'MEDIUM'
-  },
-  {
-    id: '5',
-    name: 'AquaFarm Norge - Bærekraftig oppdrett',
-    description: 'Innovativ og miljøvennlig oppdrettsteknologi',
-    status: 'DRAFT',
-    totalShares: 60000,
-    pricePerShare: 180,
-    totalValue: 10800000,
-    subscriptions: 0,
-    openingDate: '2024-11-15T00:00:00Z',
-    minimumInvestment: 1500,
-    maximumInvestment: 600000,
-    category: 'OTHER',
-    riskLevel: 'LOW'
+    totalSharesSubscribed: 75000,
+    startDate: '2024-03-01T00:00:00Z',
+    endDate: '2024-08-31T23:59:59Z',
+    sharesBefore: 300000,
+    sharesAfter: 375000,
+    finalizedAt: '2024-08-31T12:00:00Z',
+    createdAt: '2024-02-15T00:00:00Z'
   }
 ];
 
@@ -114,7 +83,8 @@ export const createEmission = async (emissionData: Omit<Emission, 'id'>): Promis
   await new Promise(resolve => setTimeout(resolve, 900));
   const newEmission: Emission = {
     ...emissionData,
-    id: (mockEmissions.length + 1).toString()
+    id: (mockEmissions.length + 1).toString(),
+    createdAt: new Date().toISOString()
   };
   mockEmissions.push(newEmission);
   return newEmission;

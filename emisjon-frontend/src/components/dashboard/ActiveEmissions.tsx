@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Link } from 'react-router';
 import { cn } from '@/components/ui/primitive';
 import { CalendarIcon, InfoIcon, CurrencyIcon } from '@/components/icons';

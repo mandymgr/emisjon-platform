@@ -32,7 +32,7 @@ import {
   p as EyeIcon,
   L as FileIcon,
   f as GridIcon,
-  v as HomeIcon,
+  v as HomeIconSvg,
   C as LockIcon,
   w as LogOutIcon,
   B as MenuIcon,
@@ -68,7 +68,7 @@ const createIcon = (IconComponent: React.ComponentType<any>, displayName: string
 };
 
 // Dashboard & Navigation Icons
-export const HomeIcon = createIcon(v, 'HomeIcon');
+export const HomeIcon = createIcon(HomeIconSvg, 'HomeIcon');
 export const MenuIcon = createIcon(B, 'MenuIcon');
 export const SearchIcon = createIcon(j, 'SearchIcon');
 export const BoltIcon = createIcon(o, 'BoltIcon');

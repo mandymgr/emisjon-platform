@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
-import { getAllEmissions } from '../services/emissionsService';
+import { getAllEmissions } from '../../services/emissionsService';
 import PageLayout from '@/components/layout/PageLayout';
+import type { Emission } from '@/types/emission';
 import {
   TrendingUp,
   Calendar,
@@ -23,10 +24,15 @@ interface EmissionStats {
   totalSubscriptions: number;
 }
 
+interface EnhancedEmission extends Emission {
+  subscriptions: number;
+  sharesAvailable?: number;
+}
+
 const MinimalEmissionsPage = () => {
   const { user } = useAppSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);
-  const [emissions, setEmissions] = useState<any[]>([]);
+  const [emissions, setEmissions] = useState<EnhancedEmission[]>([]);
   const [stats, setStats] = useState<EmissionStats | null>(null);
 
   // Check access - Level 3+ required for emissions
@@ -41,13 +47,14 @@ const MinimalEmissionsPage = () => {
         const emissionsData = await getAllEmissions();
 
         // Mock enhanced data for demo
-        const enhancedEmissions = emissionsData.map((emission: any) => ({
+        const enhancedEmissions = emissionsData.map((emission: Emission): EnhancedEmission => ({
           ...emission,
           subscriptions: Math.floor(Math.random() * 50) + 10,
           totalValue: Math.floor(Math.random() * 5000000) + 1000000,
-          status: ['PREVIEW', 'ACTIVE', 'COMPLETED', 'FINALIZED'][Math.floor(Math.random() * 4)],
+          status: (['PREVIEW', 'ACTIVE', 'COMPLETED', 'FINALIZED'] as const)[Math.floor(Math.random() * 4)],
           startDate: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString(),
-          endDate: new Date(Date.now() + Math.random() * 60 * 24 * 60 * 60 * 1000).toISOString()
+          endDate: new Date(Date.now() + Math.random() * 60 * 24 * 60 * 60 * 1000).toISOString(),
+          sharesAvailable: Math.floor(Math.random() * 100000) + 50000
         }));
 
         setEmissions(enhancedEmissions);
@@ -55,9 +62,9 @@ const MinimalEmissionsPage = () => {
         // Calculate stats
         setStats({
           totalEmissions: enhancedEmissions.length,
-          activeEmissions: enhancedEmissions.filter((e: any) => e.status === 'ACTIVE').length,
-          totalValue: enhancedEmissions.reduce((sum: number, e: any) => sum + e.totalValue, 0),
-          totalSubscriptions: enhancedEmissions.reduce((sum: number, e: any) => sum + e.subscriptions, 0)
+          activeEmissions: enhancedEmissions.filter((e: EnhancedEmission) => e.status === 'ACTIVE').length,
+          totalValue: enhancedEmissions.reduce((sum: number, e: EnhancedEmission) => sum + (e.totalValue || 0), 0),
+          totalSubscriptions: enhancedEmissions.reduce((sum: number, e: EnhancedEmission) => sum + e.subscriptions, 0)
         });
       } catch (error) {
         console.error('Error fetching emissions:', error);
@@ -229,7 +236,7 @@ const MinimalEmissionsPage = () => {
                       <div>
                         <p className="text-gray-600">Total verdi</p>
                         <p className="font-medium text-gray-900">
-                          {Math.floor(emission.totalValue / 1000)}K kr
+                          {Math.floor((emission.totalValue || 0) / 1000)}K kr
                         </p>
                       </div>
                     </div>

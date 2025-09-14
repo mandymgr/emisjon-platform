@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { getAllSubscriptions } from '@/services/subscriptionService';
 import PageLayout from '@/components/layout/PageLayout';
+import type { Subscription } from '@/types/subscription';
 import {
   Shield,
   Users,
@@ -30,11 +31,22 @@ interface ManagementStats {
   totalValue: number;
 }
 
+interface EnhancedSubscription extends Subscription {
+  totalValue: number;
+  emissionTitle: string;
+  userName: string;
+  sharesAllocated: number;
+  pricePerShare: number;
+  subscriberName: string;
+  subscriberEmail: string;
+  reviewedAt: string | null;
+}
+
 const MinimalSubscriptionManagementPage = () => {
   const { user } = useAppSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);
-  const [subscriptions, setSubscriptions] = useState<any[]>([]);
-  const [filteredSubscriptions, setFilteredSubscriptions] = useState<any[]>([]);
+  const [subscriptions, setSubscriptions] = useState<EnhancedSubscription[]>([]);
+  const [filteredSubscriptions, setFilteredSubscriptions] = useState<EnhancedSubscription[]>([]);
   const [stats, setStats] = useState<ManagementStats | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
@@ -51,13 +63,15 @@ const MinimalSubscriptionManagementPage = () => {
         const subscriptionsData = await getAllSubscriptions();
 
         // Mock enhanced data for demo
-        const enhancedSubscriptions = subscriptionsData.map((subscription: any) => ({
+        const enhancedSubscriptions = subscriptionsData.map((subscription: Subscription): EnhancedSubscription => ({
           ...subscription,
-          status: ['PENDING', 'APPROVED', 'REJECTED'][Math.floor(Math.random() * 3)],
+          status: (['PENDING', 'APPROVED', 'REJECTED'] as const)[Math.floor(Math.random() * 3)],
           sharesRequested: Math.floor(Math.random() * 1000) + 100,
+          sharesAllocated: subscription.sharesAllocated || 0,
           pricePerShare: Math.floor(Math.random() * 100) + 50,
           totalValue: 0, // Will be calculated
           emissionTitle: `Emission ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`,
+          userName: subscription.user?.name || 'Unknown User',
           subscriberName: `User ${Math.floor(Math.random() * 100) + 1}`,
           subscriberEmail: `user${Math.floor(Math.random() * 100) + 1}@example.com`,
           createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
@@ -65,7 +79,7 @@ const MinimalSubscriptionManagementPage = () => {
         }));
 
         // Calculate total values
-        const processedSubscriptions = enhancedSubscriptions.map((sub: any) => ({
+        const processedSubscriptions = enhancedSubscriptions.map((sub: EnhancedSubscription): EnhancedSubscription => ({
           ...sub,
           totalValue: sub.sharesRequested * sub.pricePerShare
         }));
@@ -78,13 +92,13 @@ const MinimalSubscriptionManagementPage = () => {
 
         setStats({
           totalSubscriptions: processedSubscriptions.length,
-          pendingApproval: processedSubscriptions.filter((s: any) => s.status === 'PENDING').length,
-          approvedToday: processedSubscriptions.filter((s: any) =>
+          pendingApproval: processedSubscriptions.filter((s: EnhancedSubscription) => s.status === 'PENDING').length,
+          approvedToday: processedSubscriptions.filter((s: EnhancedSubscription) =>
             s.status === 'APPROVED' &&
             s.reviewedAt &&
             new Date(s.reviewedAt) >= today
           ).length,
-          totalValue: processedSubscriptions.reduce((sum: number, s: any) => sum + s.totalValue, 0)
+          totalValue: processedSubscriptions.reduce((sum: number, s: EnhancedSubscription) => sum + s.totalValue, 0)
         });
       } catch (error) {
         console.error('Error fetching subscriptions:', error);
@@ -235,7 +249,7 @@ const MinimalSubscriptionManagementPage = () => {
           <div className="flex gap-4">
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+              onChange={(e) => setStatusFilter(e.target.value as 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED')}
               className="px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
             >
               <option value="ALL">All Status</option>
@@ -261,7 +275,7 @@ const MinimalSubscriptionManagementPage = () => {
         <div className="p-8">
           {filteredSubscriptions.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {filteredSubscriptions.map((subscription: any) => (
+              {filteredSubscriptions.map((subscription: EnhancedSubscription) => (
                 <div key={subscription.id} className="border border-neutral-200 hover:border-neutral-400 transition-colors">
                   {/* Header */}
                   <div className="p-6 border-b border-neutral-100">

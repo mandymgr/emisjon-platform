@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import type { Emission } from '@/types/emission';
 import { Progress } from '@/components/ui/progress';
@@ -20,23 +20,42 @@ function Stat({ label, value }: { label: string; value: string }) {
 function ActiveEmissionCard({ emission }: ActiveEmissionCardProps) {
   const navigate = useNavigate();
 
-  // Memoized calculations for better performance
+  // Memoized calculations for better performance - moved before any early returns
   const { daysLeft, progress, totalValue } = useMemo(() => {
-    const endDate = new Date(emission.endDate);
-    const startDate = new Date(emission.startDate);
+    // Defensive check for emission data
+    if (!emission || typeof emission !== 'object') {
+      return { daysLeft: 0, progress: 0, totalValue: 0 };
+    }
+
+    // Safe date parsing with fallbacks
+    const endDate = emission.endDate ? new Date(emission.endDate) : new Date();
+    const startDate = emission.startDate ? new Date(emission.startDate) : new Date();
     const now = new Date();
+
+    // Ensure dates are valid
+    if (isNaN(endDate.getTime()) || isNaN(startDate.getTime())) {
+      return { daysLeft: 0, progress: 0, totalValue: 0 };
+    }
 
     const diffDays = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     const daysLeft = Math.max(0, diffDays);
 
     const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
     const elapsed = Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    const progress = Math.min(100, Math.max(0, (elapsed / totalDays) * 100));
+    const progress = totalDays > 0 ? Math.min(100, Math.max(0, (elapsed / totalDays) * 100)) : 0;
 
-    const totalValue = emission.newSharesOffered * emission.pricePerShare;
+    const shares = typeof emission.newSharesOffered === 'number' ? emission.newSharesOffered : 0;
+    const price = typeof emission.pricePerShare === 'number' ? emission.pricePerShare : 0;
+    const totalValue = shares * price;
 
     return { daysLeft, progress, totalValue };
   }, [emission]);
+
+  // Early return after hooks to avoid conditional hook calls
+  if (!emission || typeof emission !== 'object') {
+    console.error('ActiveEmissionCard: Invalid emission data:', emission);
+    return null;
+  }
 
   return (
     <section
@@ -64,11 +83,11 @@ function ActiveEmissionCard({ emission }: ActiveEmissionCardProps) {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Stat
             label="Shares Offered"
-            value={emission.newSharesOffered.toLocaleString("nb-NO")}
+            value={emission.newSharesOffered ? emission.newSharesOffered.toLocaleString("nb-NO") : '0'}
           />
           <Stat
             label="Price per Share"
-            value={`${emission.pricePerShare.toLocaleString("nb-NO")} NOK`}
+            value={emission.pricePerShare ? `${emission.pricePerShare.toLocaleString("nb-NO")} NOK` : '0 NOK'}
           />
         </div>
 
@@ -76,7 +95,7 @@ function ActiveEmissionCard({ emission }: ActiveEmissionCardProps) {
         <div className="bg-muted/30 rounded-lg p-6 mb-8 flex justify-between items-center">
           <span className="text-sm font-light text-muted-foreground uppercase tracking-wider">Total Value</span>
           <span className="text-xl font-light text-foreground">
-            {totalValue.toLocaleString("nb-NO")} NOK
+            {totalValue ? totalValue.toLocaleString("nb-NO") : '0'} NOK
           </span>
         </div>
 
@@ -97,8 +116,12 @@ function ActiveEmissionCard({ emission }: ActiveEmissionCardProps) {
 
         {/* Datoer - Norsk formatering */}
         <div className="flex justify-between text-sm text-muted-foreground mb-8">
-          <span className="font-light">Start: {new Date(emission.startDate).toLocaleDateString("nb-NO")}</span>
-          <span className="font-light">Slutt: {new Date(emission.endDate).toLocaleDateString("nb-NO")}</span>
+          <span className="font-light">
+            Start: {emission.startDate ? new Date(emission.startDate).toLocaleDateString("nb-NO") : 'Ikke satt'}
+          </span>
+          <span className="font-light">
+            Slutt: {emission.endDate ? new Date(emission.endDate).toLocaleDateString("nb-NO") : 'Ikke satt'}
+          </span>
         </div>
 
         {/* CTA Button - Med bedre a11y */}

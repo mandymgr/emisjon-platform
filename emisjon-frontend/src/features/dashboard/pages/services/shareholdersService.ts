@@ -1,16 +1,8 @@
 // Mock service for shareholders data
-export interface Shareholder {
-  id: string;
-  name: string;
-  email: string;
-  shareCount: number;
-  ownershipPercentage: number;
-  shareClass: string;
-  registrationDate: string;
-  contactPhone?: string;
-  address?: string;
-  isActive: boolean;
-}
+import type { Shareholder } from '@/types/trading';
+
+// Re-export the type for convenience
+export type { Shareholder };
 
 // Mock data
 const mockShareholders: Shareholder[] = [
@@ -18,49 +10,61 @@ const mockShareholders: Shareholder[] = [
     id: '1',
     name: 'Kari Nordmann',
     email: 'kari.nordmann@example.com',
-    shareCount: 15000,
+    phone: '+47 123 45 678',
+    sharesOwned: 15000,
+    totalShares: 15000,
+    availableShares: 15000,
+    lockedShares: 0,
+    sharesLockedForOrders: 0,
+    sharesAvailable: 15000,
     ownershipPercentage: 15.0,
-    shareClass: 'A',
-    registrationDate: '2024-01-15T00:00:00Z',
-    contactPhone: '+47 123 45 678',
-    address: 'Storgata 1, 0001 Oslo',
-    isActive: true
+    createdAt: '2024-01-15T00:00:00Z',
+    updatedAt: '2024-01-15T00:00:00Z'
   },
   {
     id: '2',
     name: 'Ola Hansen',
     email: 'ola.hansen@example.com',
-    shareCount: 25000,
+    phone: '+47 987 65 432',
+    sharesOwned: 25000,
+    totalShares: 25000,
+    availableShares: 25000,
+    lockedShares: 0,
+    sharesLockedForOrders: 0,
+    sharesAvailable: 25000,
     ownershipPercentage: 25.0,
-    shareClass: 'A',
-    registrationDate: '2024-02-20T00:00:00Z',
-    contactPhone: '+47 987 65 432',
-    address: 'Lillestorg 5, 4600 Kristiansand',
-    isActive: true
+    createdAt: '2024-02-20T00:00:00Z',
+    updatedAt: '2024-02-20T00:00:00Z'
   },
   {
     id: '3',
     name: 'Anna Larsen',
     email: 'anna.larsen@example.com',
-    shareCount: 8000,
+    phone: '+47 555 12 345',
+    sharesOwned: 8000,
+    totalShares: 8000,
+    availableShares: 8000,
+    lockedShares: 0,
+    sharesLockedForOrders: 0,
+    sharesAvailable: 8000,
     ownershipPercentage: 8.0,
-    shareClass: 'B',
-    registrationDate: '2024-03-10T00:00:00Z',
-    contactPhone: '+47 555 12 345',
-    address: 'Bergensveien 12, 5003 Bergen',
-    isActive: true
+    createdAt: '2024-03-10T00:00:00Z',
+    updatedAt: '2024-03-10T00:00:00Z'
   },
   {
     id: '4',
     name: 'Per Andersen',
     email: 'per.andersen@example.com',
-    shareCount: 12000,
+    phone: '+47 777 88 999',
+    sharesOwned: 12000,
+    totalShares: 12000,
+    availableShares: 12000,
+    lockedShares: 0,
+    sharesLockedForOrders: 0,
+    sharesAvailable: 12000,
     ownershipPercentage: 12.0,
-    shareClass: 'A',
-    registrationDate: '2024-04-05T00:00:00Z',
-    contactPhone: '+47 777 88 999',
-    address: 'Torget 8, 7010 Trondheim',
-    isActive: false
+    createdAt: '2024-04-05T00:00:00Z',
+    updatedAt: '2024-04-05T00:00:00Z'
   }
 ];
 

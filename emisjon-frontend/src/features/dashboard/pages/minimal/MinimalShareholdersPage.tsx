@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
-import { getAllShareholders, createShareholder, updateShareholder, deleteShareholder, type Shareholder } from '../services/shareholdersService';
+import { getAllShareholders, createShareholder, updateShareholder, deleteShareholder, type Shareholder } from '../../services/shareholdersService';
 import PageLayout from '@/components/layout/PageLayout';
 import {
   Search,
@@ -14,7 +14,6 @@ import {
   Loader2,
   Phone,
   Mail,
-  MapPin,
   User,
   X
 } from 'lucide-react';
@@ -66,7 +65,7 @@ const MinimalShareholdersPage = () => {
 
   // Filter and sort shareholders
   useEffect(() => {
-    let filtered = shareholders.filter(shareholder =>
+    const filtered = shareholders.filter(shareholder =>
       shareholder.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       shareholder.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       shareholder.shareClass.toLowerCase().includes(searchTerm.toLowerCase())
