@@ -1,0 +1,262 @@
+/**
+ * Oblinor Design System Tokens
+ * Scandinavian/Kinfolk-inspired design system for real estate crowdfunding
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  /* === OBLINOR COLOR SYSTEM === */
+
+  /* Primary Teal Palette */
+  --obl-primary: 18 79 98; /* #124F62 */
+  --obl-primary-light: 28 106 126; /* #1C6A7E */
+  --obl-primary-lighter: 39 136 153; /* #278899 */
+  --obl-primary-dark: 12 60 74; /* #0C3C4A */
+
+  /* Neutral Palette */
+  --obl-neutral: 245 245 240; /* #F5F5F0 */
+  --obl-neutral-dark: 230 230 224; /* #E6E6E0 */
+  --obl-text: 14 26 28; /* #0E1A1C */
+  --obl-white: 255 255 255; /* #FFFFFF */
+
+  /* Semantic Colors */
+  --obl-success: 34 197 94; /* Green for funded projects */
+  --obl-warning: 251 191 36; /* Amber for pending */
+  --obl-error: 239 68 68; /* Red for errors */
+
+  /* === DESIGN TOKENS === */
+
+  /* Background Colors */
+  --background: var(--obl-white);
+  --background-muted: var(--obl-neutral);
+  --background-subtle: 247 247 245; /* #F7F7F5 */
+
+  /* Text Colors */
+  --foreground: var(--obl-text);
+  --foreground-muted: 14 26 28 / 0.7;
+  --foreground-subtle: 14 26 28 / 0.6;
+
+  /* Component Colors */
+  --primary: var(--obl-primary);
+  --primary-foreground: var(--obl-white);
+  --secondary: var(--obl-neutral);
+  --secondary-foreground: var(--obl-text);
+
+  /* Border & Interaction */
+  --border: var(--obl-neutral-dark);
+  --border-muted: var(--obl-neutral-dark) / 0.5;
+  --input: var(--obl-white);
+  --ring: var(--obl-primary) / 0.3;
+
+  /* Card & Surfaces */
+  --card: var(--obl-white) / 0.9;
+  --card-foreground: var(--obl-text);
+  --popover: var(--obl-white);
+  --popover-foreground: var(--obl-text);
+
+  /* Muted Elements */
+  --muted: var(--obl-neutral);
+  --muted-foreground: var(--obl-text) / 0.6;
+  --accent: var(--obl-primary) / 0.1;
+  --accent-foreground: var(--obl-primary);
+
+  /* Status Colors */
+  --destructive: var(--obl-error);
+  --destructive-foreground: var(--obl-white);
+
+  /* === TYPOGRAPHY SCALE === */
+
+  /* Font Families */
+  --font-serif: "EB Garamond", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Editorial Typography Scale */
+  --text-display-large: 3.5rem;
+  --text-display: 3rem;
+  --text-headline: 2.25rem;
+  --text-title-large: 1.75rem;
+  --text-title: 1.5rem;
+  --text-body-large: 1.125rem;
+  --text-body: 1rem;
+  --text-label: 0.875rem;
+  --text-caption: 0.75rem;
+
+  /* Line Heights */
+  --leading-display: 1.1;
+  --leading-headline: 1.2;
+  --leading-title: 1.3;
+  --leading-body: 1.6;
+  --leading-label: 1.4;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
+
+  /* === SPACING SCALE === */
+
+  /* Scandinavian generous spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+  --space-5xl: 8rem;
+
+  /* Component-specific spacing */
+  --space-section: var(--space-4xl);
+  --space-card: var(--space-xl);
+  --space-button: var(--space-lg);
+
+  /* === SHADOWS === */
+
+  --shadow-soft: 0 2px 8px rgb(var(--obl-primary) / 0.08);
+  --shadow-soft-lg: 0 4px 16px rgb(var(--obl-primary) / 0.12);
+  --shadow-professional: 0 1px 3px rgb(var(--obl-primary) / 0.1), 0 1px 2px rgb(var(--obl-primary) / 0.06);
+
+  /* === RADII === */
+
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: 1rem;
+
+  /* === ANIMATION === */
+
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 300ms ease-out;
+  --transition-slow: 500ms ease-out;
+}
+
+/* === DARK MODE === */
+
+.dark {
+  /* Background gradient for dark mode */
+  --background: 12 60 74; /* Dark teal gradient start */
+  --background-muted: 18 79 98; /* Dark teal gradient end */
+  --background-subtle: 12 60 74 / 0.8;
+
+  /* Text Colors */
+  --foreground: var(--obl-white);
+  --foreground-muted: 255 255 255 / 0.8;
+  --foreground-subtle: 255 255 255 / 0.6;
+
+  /* Component Colors */
+  --primary: var(--obl-primary-lighter);
+  --primary-foreground: var(--obl-white);
+  --secondary: 255 255 255 / 0.1;
+  --secondary-foreground: var(--obl-white);
+
+  /* Borders */
+  --border: 255 255 255 / 0.1;
+  --border-muted: 255 255 255 / 0.05;
+  --input: 255 255 255 / 0.05;
+  --ring: var(--obl-primary-lighter) / 0.3;
+
+  /* Cards & Surfaces */
+  --card: 255 255 255 / 0.05;
+  --card-foreground: var(--obl-white);
+  --popover: var(--obl-primary-dark);
+  --popover-foreground: var(--obl-white);
+
+  /* Muted Elements */
+  --muted: 255 255 255 / 0.1;
+  --muted-foreground: 255 255 255 / 0.6;
+  --accent: var(--obl-primary-lighter) / 0.2;
+  --accent-foreground: var(--obl-primary-lighter);
+}
+
+/* === BASE STYLES === */
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-normal);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+.dark body {
+  background: linear-gradient(135deg, hsl(var(--obl-primary-dark)), hsl(var(--obl-primary)));
+}
+
+/* === TYPOGRAPHY === */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: var(--leading-headline);
+  letter-spacing: var(--tracking-tight);
+  color: hsl(var(--foreground));
+}
+
+h1 { font-size: var(--text-display); }
+h2 { font-size: var(--text-headline); }
+h3 { font-size: var(--text-title-large); }
+h4 { font-size: var(--text-title); }
+h5 { font-size: var(--text-body-large); }
+h6 { font-size: var(--text-body); }
+
+.text-display-large {
+  font-size: var(--text-display-large);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-tight);
+  font-family: var(--font-serif);
+}
+
+.text-headline {
+  font-size: var(--text-headline);
+  line-height: var(--leading-headline);
+  letter-spacing: var(--tracking-tight);
+  font-family: var(--font-serif);
+}
+
+.text-label {
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+.text-caption {
+  font-size: var(--text-caption);
+  line-height: var(--leading-label);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+/* === FOCUS STYLES === */
+
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+  --tw-ring-color: hsl(var(--ring));
+}
+
+/* === REDUCED MOTION === */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === SELECTION === */
+
+::selection {
+  background-color: hsl(var(--primary) / 0.2);
+  color: hsl(var(--foreground));
+}

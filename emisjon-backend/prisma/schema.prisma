@@ -1,0 +1,375 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String    // This will store the hashed password
+  name      String
+  phone     String?   // Optional phone number
+  role      UserRole  @default(USER)
+  level     Int       @default(1) // Level 1-3 for users, Level 1-2 for admins
+  lastLogin DateTime? // Last login timestamp
+  isActive  Boolean   @default(true) // Whether the user account is active
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  shareholder           Shareholder?
+  createdEmissions      Emission[]             @relation("CreatedEmissions")
+  finalizedEmissions    Emission[]             @relation("FinalizedEmissions")
+  approvedSubscriptions EmissionSubscription[] @relation("ApprovedSubscriptions")
+  subscriptions         EmissionSubscription[] @relation("UserSubscriptions")
+  auditLogs             EmissionAuditLog[]
+  snapshots             ShareholderSnapshot[]
+  generalAuditLogs      AuditLog[]
+
+  @@index([role, level])
+  @@index([email])
+}
+
+model Shareholder {
+  id                     String   @id @default(cuid())
+  userId                 String?  @unique // Links to User table if shareholder is also a user
+  name                   String
+  email                  String   @unique
+  phone                  String?
+  sharesOwned            Int      @default(0)
+  totalShares            Int      @default(0) // Alias for compatibility
+  availableShares        Int      @default(0) // Shares available for trading
+  lockedShares           Int      @default(0) // Shares locked in pending trades
+  sharesLockedForOrders  Int      @default(0) // Shares locked in active sell orders
+  sharesAvailable        Int      @default(0) // Computed: sharesOwned - sharesLockedForOrders
+  ownershipPercentage    Decimal? @db.Decimal(5, 2) // Calculated field, updated on changes
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+  orders Order[] // Orders placed by this shareholder
+
+  @@index([email])
+  @@index([sharesOwned])
+  @@index([sharesAvailable])
+}
+
+model Emission {
+  id                    String         @id @default(cuid())
+  title                 String
+  description           String
+  presentationFileUrl   String? // URL to uploaded PDF file
+  sharesBefore          Int
+  newSharesOffered      Int
+  sharesAfter           Int // Computed: sharesBefore + newSharesOffered
+  pricePerShare         Decimal        @db.Decimal(10, 2)
+  startDate             DateTime
+  endDate               DateTime
+  status                EmissionStatus @default(PREVIEW)
+  isPreview             Boolean        @default(false)
+  totalSharesSubscribed Int? // Total shares subscribed (sum of all approved subscriptions)
+  finalizedAt           DateTime?
+  finalizedById         String?
+  createdById           String
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  // Relations
+  createdBy     User                   @relation("CreatedEmissions", fields: [createdById], references: [id])
+  finalizedBy   User?                  @relation("FinalizedEmissions", fields: [finalizedById], references: [id])
+  subscriptions EmissionSubscription[]
+  snapshots     ShareholderSnapshot[]
+  auditLogs     EmissionAuditLog[]
+
+  @@index([status])
+  @@index([startDate, endDate])
+}
+
+model EmissionSubscription {
+  id              String             @id @default(cuid())
+  emissionId      String
+  userId          String
+  sharesRequested Int
+  sharesAllocated Int? // Set by admin upon approval
+  status          SubscriptionStatus @default(PENDING)
+  approvedById    String?
+  approvedAt      DateTime?
+  createdAt       DateTime           @default(now())
+
+  // Relations
+  emission   Emission @relation(fields: [emissionId], references: [id])
+  user       User     @relation("UserSubscriptions", fields: [userId], references: [id])
+  approvedBy User?    @relation("ApprovedSubscriptions", fields: [approvedById], references: [id])
+
+  // Unique constraint: Each user can only subscribe once per emission
+  @@unique([emissionId, userId])
+  @@index([status])
+}
+
+model ShareholderSnapshot {
+  id                String       @id @default(cuid())
+  emissionId        String
+  type              SnapshotType
+  snapshotReason    String       @default("first_approval") // Why snapshot was taken
+  totalSharesBefore Int // Total shares in system before emission
+  snapshotData      Json // Complete shareholder data at time of snapshot
+  totalShares       Int // Total shares at time of snapshot
+  createdById       String? // Admin who triggered the snapshot
+  createdAt         DateTime     @default(now())
+
+  // Relations
+  emission  Emission @relation(fields: [emissionId], references: [id])
+  createdBy User?    @relation(fields: [createdById], references: [id])
+
+  @@index([emissionId, type])
+  @@index([createdAt])
+}
+
+model EmissionAuditLog {
+  id         String      @id @default(cuid())
+  emissionId String
+  userId     String
+  action     AuditAction
+  changes    Json? // Stores what was changed (for UPDATE actions)
+  metadata   Json? // Additional context data
+  ipAddress  String? // IP address of the user
+  userAgent  String? // User agent string
+  createdAt  DateTime    @default(now())
+
+  // Relations
+  emission Emission @relation(fields: [emissionId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@index([emissionId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// Comprehensive audit log for all database operations
+model AuditLog {
+  id          String   @id @default(cuid())
+  tableName   String // Table that was modified
+  recordId    String // ID of the record that was modified
+  action      String // INSERT, UPDATE, DELETE
+  oldValues   Json? // Previous values (for UPDATE/DELETE)
+  newValues   Json? // New values (for INSERT/UPDATE)
+  changedById String? // User who made the change
+  changedAt   DateTime @default(now())
+  ipAddress   String? // IP address
+  userAgent   String? // User agent string
+
+  // Relations
+  changedBy User? @relation(fields: [changedById], references: [id])
+
+  @@index([tableName, recordId])
+  @@index([changedAt])
+  @@index([changedById])
+}
+
+// Trading System Models
+
+model Order {
+  id                String      @id @default(cuid())
+  shareholderId     String      // Shareholder placing the order
+  userId            String      // User who created the order
+  createdBy         String      // User who created (for audit)
+  type              OrderType   // BUY or SELL
+  shares            Int         // Number of shares
+  quantity          Int         // Alias for shares
+  pricePerShare     Decimal     @db.Decimal(10, 2) // Price per share
+  price             Decimal     @db.Decimal(10, 2) // Alias for pricePerShare
+  remainingQuantity Int         // Shares not yet matched
+  filledQuantity    Int         @default(0) // Shares already matched
+  status            OrderStatus @default(OPEN) // Order status
+  partialFill       Boolean     @default(true) // Allow partial fills
+  timeLimit         DateTime?   // Optional expiration time
+  matchedAt         DateTime?   // When fully matched
+  completedAt       DateTime?   // When completed
+  cancelReason      String?     // Reason if cancelled
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  // Relations
+  shareholder Shareholder @relation(fields: [shareholderId], references: [id])
+  buyTrades   Trade[]     @relation("BuyOrders")
+  sellTrades  Trade[]     @relation("SellOrders")
+
+  @@index([shareholderId])
+  @@index([status])
+  @@index([type, status])
+  @@index([pricePerShare])
+  @@index([createdAt])
+}
+
+model Trade {
+  id                  String      @id @default(cuid())
+  buyOrderId          String
+  sellOrderId         String
+  buyerShareholderId  String      // Buyer shareholder
+  sellerShareholderId String      // Seller shareholder
+  quantity            Int         // Number of shares traded
+  sharesTraded        Int         // Alias for compatibility
+  price               Decimal     @db.Decimal(10, 2) // Trade price
+  pricePerShare       Decimal     @db.Decimal(10, 2) // Alias
+  totalAmount         Decimal     @db.Decimal(12, 2) // Total trade value
+  totalValue          Decimal     @db.Decimal(12, 2) // Alias
+  approvedBy          String?     // Admin who approved
+  approvedById        String?     // Admin L2 who approved
+  rejectedBy          String?     // Admin who rejected
+  rejectedAt          DateTime?   // Rejection timestamp
+  rejectionReason     String?     // Rejection reason
+  notes               String?     // Admin notes
+  status              TradeStatus @default(PENDING)
+  tradeType           TradeType   // FULL or PARTIAL
+  declineReason       String?     // Reason if declined
+  approvedAt          DateTime?   // Approval timestamp
+  matchedAt           DateTime    @default(now()) // When matched
+  createdAt           DateTime    @default(now())
+  completedAt         DateTime?   // When completed
+
+  // Relations
+  buyOrder  Order @relation("BuyOrders", fields: [buyOrderId], references: [id])
+  sellOrder Order @relation("SellOrders", fields: [sellOrderId], references: [id])
+
+  @@index([status])
+  @@index([buyOrderId])
+  @@index([sellOrderId])
+  @@index([buyerShareholderId])
+  @@index([sellerShareholderId])
+  @@index([matchedAt])
+}
+
+model TradingAuditLog {
+  id         String            @id @default(cuid())
+  userId     String            // User who performed action
+  action     TradingActionType // Type of action
+  entityType String            // Order, Trade, etc.
+  entityId   String            // ID of the entity
+  oldValues  Json?             // Previous values
+  newValues  Json?             // New values
+  metadata   Json?             // Additional context
+  ipAddress  String?           // IP address
+  userAgent  String?           // User agent
+  createdAt  DateTime          @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String             @id @default(cuid())
+  userId    String             // Recipient user
+  type      NotificationType   // Type of notification
+  title     String             // Notification title
+  message   String             // Notification message
+  data      Json?              // Related data (order ID, trade ID, etc.)
+  read      Boolean            @default(false)
+  readAt    DateTime?          // When read
+  createdAt DateTime           @default(now())
+
+  @@index([userId, read])
+  @@index([type])
+  @@index([createdAt])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum EmissionStatus {
+  PREVIEW
+  ACTIVE
+  COMPLETED
+  FINALIZED
+}
+
+enum SnapshotReason {
+  FIRST_APPROVAL
+  MANUAL
+  SYSTEM
+}
+
+enum SubscriptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SnapshotType {
+  BEFORE_APPROVAL
+  AFTER_FINALIZATION
+  MANUAL
+  SYSTEM
+}
+
+enum AuditAction {
+  CREATED
+  UPDATED
+  ACTIVATED
+  PREVIEW_SET
+  COMPLETED
+  FINALIZED
+  SUBSCRIPTION_APPROVED
+  SUBSCRIPTION_REJECTED
+}
+
+// Trading System Enums
+
+enum OrderType {
+  BUY
+  SELL
+}
+
+enum OrderStatus {
+  OPEN
+  PARTIAL
+  PARTIALLY_FILLED
+  FILLED
+  CANCELLED
+  EXPIRED
+}
+
+enum TradeStatus {
+  PENDING
+  PENDING_APPROVAL
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
+enum TradeType {
+  FULL
+  PARTIAL
+}
+
+enum TradingActionType {
+  ORDER_CREATED
+  ORDER_CANCELLED
+  ORDER_MATCHED
+  ORDER_EXPIRED
+  TRADE_CREATED
+  TRADE_APPROVED
+  TRADE_REJECTED
+  SHARES_TRANSFERRED
+}
+
+enum NotificationType {
+  ORDER_CREATED
+  ORDER_MATCHED
+  ORDER_CANCELLED
+  ORDER_EXPIRED
+  TRADE_PENDING
+  TRADE_APPROVED
+  TRADE_REJECTED
+  SHARES_RECEIVED
+  SHARES_SOLD
+}
