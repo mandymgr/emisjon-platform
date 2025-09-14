@@ -1,818 +1,548 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
-import { getAllShareholders, createShareholder, updateShareholder, deleteShareholder } from '../services/shareholdersService';
+import { getAllShareholders, createShareholder, updateShareholder, deleteShareholder, type Shareholder } from '../services/shareholdersService';
+import PageLayout from '@/components/layout/PageLayout';
 import {
   Search,
   Plus,
   Building2,
   TrendingUp,
   Calendar,
-  Mail,
-  Phone,
-  MapPin,
-  Download,
-  Loader2,
-  UserX,
-  MoreHorizontal,
-  Edit3,
+  Edit,
   Trash2,
-  X,
-  AlertCircle
+  UserX,
+  Loader2,
+  Phone,
+  Mail,
+  MapPin,
+  User,
+  X
 } from 'lucide-react';
 
-interface ShareholderWithExtras {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  address?: string;
-  shareCount: number;
-  sharePercentage: number;
-  createdAt: string;
-  lastUpdated?: string;
-  isActive: boolean;
-}
-
 const MinimalShareholdersPage = () => {
-  const { user: currentUser } = useAppSelector((state) => state.auth);
-  const [shareholders, setShareholders] = useState<ShareholderWithExtras[]>([]);
-  const [filteredShareholders, setFilteredShareholders] = useState<ShareholderWithExtras[]>([]);
+  const { user } = useAppSelector((state) => state.auth);
+  const [shareholders, setShareholders] = useState<Shareholder[]>([]);
+  const [filteredShareholders, setFilteredShareholders] = useState<Shareholder[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'name' | 'shares' | 'percentage'>('shares');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
-
-  // Modal states
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedShareholder, setSelectedShareholder] = useState<ShareholderWithExtras | null>(null);
-  const [actionLoading, setActionLoading] = useState(false);
-
-  // Form states
-  const [formData, setFormData] = useState({
+  const [selectedShareholder, setSelectedShareholder] = useState<Shareholder | null>(null);
+  const [newShareholder, setNewShareholder] = useState<Partial<Shareholder>>({
     name: '',
     email: '',
-    phone: '',
-    shares: 0
+    shareCount: 0,
+    ownershipPercentage: 0,
+    shareClass: 'A',
+    contactPhone: '',
+    address: '',
+    isActive: true
   });
 
-  // Check if user has access
-  const hasAccess = currentUser && (currentUser?.level || 0) >= 2;
+  // Check access permission
+  const hasAccess = user && user.level >= 2;
 
   useEffect(() => {
-    if (!hasAccess) return;
-
-    const fetchShareholders = async () => {
-      try {
-        setLoading(true);
-        const shareholdersData = await getAllShareholders();
-
-        // Add mock data for demo
-        const enrichedData = shareholdersData.map((sh: any, index: number) => ({
-          ...sh,
-          shareCount: sh.shares || 0, // Map shares to shareCount
-          sharePercentage: ((sh.shares || 0) / 1000000) * 100, // Mock calculation
-          phone: index % 3 === 0 ? '+47 123 45 678' : undefined,
-          address: index % 4 === 0 ? 'Oslo, Norway' : undefined,
-          lastUpdated: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-          isActive: Math.random() > 0.1, // 90% active
-          createdAt: sh.joinedAt || sh.createdAt || new Date().toISOString()
-        }));
-
-        setShareholders(enrichedData);
-        setFilteredShareholders(enrichedData);
-      } catch (error) {
-        console.error('Error fetching shareholders:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchShareholders();
+    if (hasAccess) {
+      fetchShareholders();
+    }
   }, [hasAccess]);
 
-  // Modal handlers
-  const handleAddShareholder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email) return;
-
+  const fetchShareholders = async () => {
     try {
-      setActionLoading(true);
-      const newShareholder = await createShareholder({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || undefined,
-        shares: formData.shares
-      });
-
-      // Add to local state with enriched data
-      const enrichedShareholder = {
-        ...newShareholder,
-        shareCount: newShareholder.shares || 0,
-        sharePercentage: ((newShareholder.shares || 0) / 1000000) * 100,
-        phone: formData.phone || undefined,
-        address: undefined,
-        lastUpdated: new Date().toISOString(),
-        isActive: true,
-        createdAt: new Date().toISOString()
-      };
-
-      setShareholders(prev => [...prev, enrichedShareholder]);
-      setShowAddModal(false);
-      setFormData({ name: '', email: '', phone: '', shares: 0 });
+      setLoading(true);
+      const data = await getAllShareholders();
+      setShareholders(data);
+      setFilteredShareholders(data);
     } catch (error) {
-      console.error('Error creating shareholder:', error);
+      console.error('Error fetching shareholders:', error);
     } finally {
-      setActionLoading(false);
+      setLoading(false);
     }
   };
 
-  const handleEditShareholder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedShareholder || !formData.name || !formData.email) return;
-
-    try {
-      setActionLoading(true);
-      const updatedShareholder = await updateShareholder(selectedShareholder.id, {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || undefined,
-        shares: formData.shares
-      });
-
-      // Update local state
-      setShareholders(prev => prev.map(sh =>
-        sh.id === selectedShareholder.id
-          ? { ...sh, ...updatedShareholder, shareCount: updatedShareholder.shares || 0 }
-          : sh
-      ));
-      setShowEditModal(false);
-      setSelectedShareholder(null);
-      setFormData({ name: '', email: '', phone: '', shares: 0 });
-    } catch (error) {
-      console.error('Error updating shareholder:', error);
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleDeleteShareholder = async () => {
-    if (!selectedShareholder) return;
-
-    try {
-      setActionLoading(true);
-      await deleteShareholder(selectedShareholder.id);
-      setShareholders(prev => prev.filter(sh => sh.id !== selectedShareholder.id));
-      setShowDeleteModal(false);
-      setSelectedShareholder(null);
-    } catch (error) {
-      console.error('Error deleting shareholder:', error);
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const openEditModal = (shareholder: ShareholderWithExtras) => {
-    setSelectedShareholder(shareholder);
-    setFormData({
-      name: shareholder.name,
-      email: shareholder.email,
-      phone: shareholder.phone || '',
-      shares: shareholder.shareCount
-    });
-    setShowEditModal(true);
-  };
-
-  const openDeleteModal = (shareholder: ShareholderWithExtras) => {
-    setSelectedShareholder(shareholder);
-    setShowDeleteModal(true);
-  };
-
-  const handleExportCSV = () => {
-    const csvData = filteredShareholders.map(sh => ({
-      Name: sh.name,
-      Email: sh.email,
-      Phone: sh.phone || 'N/A',
-      Address: sh.address || 'N/A',
-      Shares: sh.shareCount,
-      'Ownership %': sh.sharePercentage.toFixed(2),
-      Status: sh.isActive ? 'Active' : 'Inactive',
-      'Created At': new Date(sh.createdAt).toLocaleDateString()
-    }));
-
-    const csvContent = [
-      Object.keys(csvData[0]).join(','),
-      ...csvData.map(row => Object.values(row).map(val =>
-        typeof val === 'string' && val.includes(',') ? `"${val}"` : val
-      ).join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `shareholders-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
+  // Filter and sort shareholders
   useEffect(() => {
-    let filtered = shareholders.filter(sh =>
-      sh.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sh.email.toLowerCase().includes(searchTerm.toLowerCase())
+    let filtered = shareholders.filter(shareholder =>
+      shareholder.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      shareholder.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      shareholder.shareClass.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Sort
     filtered.sort((a, b) => {
-      let aVal, bVal;
-      switch (sortBy) {
-        case 'name':
-          aVal = a.name;
-          bVal = b.name;
-          break;
-        case 'shares':
-          aVal = a.shareCount;
-          bVal = b.shareCount;
-          break;
-        case 'percentage':
-          aVal = a.sharePercentage;
-          bVal = b.sharePercentage;
-          break;
-        default:
-          aVal = a.shareCount;
-          bVal = b.shareCount;
+      const aValue = a[sortBy as keyof Shareholder];
+      const bValue = b[sortBy as keyof Shareholder];
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortOrder === 'asc' 
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
       }
-
-      if (typeof aVal === 'string') {
-        return sortOrder === 'asc' ? aVal.localeCompare(bVal as string) : (bVal as string).localeCompare(aVal);
-      } else {
-        return sortOrder === 'asc' ? (aVal as number) - (bVal as number) : (bVal as number) - (aVal as number);
+      
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
       }
+      
+      return 0;
     });
 
     setFilteredShareholders(filtered);
   }, [shareholders, searchTerm, sortBy, sortOrder]);
 
-  const totalShares = shareholders.reduce((sum, sh) => sum + sh.shareCount, 0);
+  const handleCreateShareholder = async () => {
+    try {
+      const shareholderData: Omit<Shareholder, 'id'> = {
+        ...newShareholder as Omit<Shareholder, 'id'>,
+        registrationDate: new Date().toISOString()
+      };
+      
+      await createShareholder(shareholderData);
+      await fetchShareholders();
+      setShowCreateModal(false);
+      setNewShareholder({
+        name: '',
+        email: '',
+        shareCount: 0,
+        ownershipPercentage: 0,
+        shareClass: 'A',
+        contactPhone: '',
+        address: '',
+        isActive: true
+      });
+    } catch (error) {
+      console.error('Error creating shareholder:', error);
+    }
+  };
+
+  const handleUpdateShareholder = async () => {
+    if (!selectedShareholder) return;
+    
+    try {
+      await updateShareholder(selectedShareholder.id, selectedShareholder);
+      await fetchShareholders();
+      setShowEditModal(false);
+      setSelectedShareholder(null);
+    } catch (error) {
+      console.error('Error updating shareholder:', error);
+    }
+  };
+
+  const handleDeleteShareholder = async () => {
+    if (!selectedShareholder) return;
+    
+    try {
+      await deleteShareholder(selectedShareholder.id);
+      await fetchShareholders();
+      setShowDeleteModal(false);
+      setSelectedShareholder(null);
+    } catch (error) {
+      console.error('Error deleting shareholder:', error);
+    }
+  };
 
   if (!hasAccess) {
     return (
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white border border-neutral-200 p-12 text-center">
-          <UserX className="h-16 w-16 text-neutral-300 mx-auto mb-4" />
-          <h2 className="text-xl font-light text-neutral-900 mb-2">Access Restricted</h2>
-          <p className="text-neutral-600">
-            Level 2+ access required to view shareholders
+      <PageLayout
+        title="Aksjonærer"
+        subtitle="Tilgang nektet"
+      >
+        <div className="bg-white border border-gray-200 p-12 text-center rounded-2xl shadow-soft">
+          <UserX className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-xl font-serif text-teal-900 mb-2">Tilgang begrenset</h2>
+          <p className="text-gray-600">
+            Nivå 2+ tilgang kreves for å se aksjonærer
           </p>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-neutral-400" />
-      </div>
+      <PageLayout
+        title="Aksjonærer"
+        subtitle="Laster aksjonærer..."
+      >
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-8 w-8 animate-spin text-teal-700" />
+        </div>
+      </PageLayout>
     );
   }
 
+  const actions = (
+    <button
+      onClick={() => setShowCreateModal(true)}
+      className="flex items-center space-x-2 bg-teal-700 hover:bg-teal-800 text-white px-4 py-2 rounded-xl transition-colors font-light"
+    >
+      <Plus className="h-4 w-4" />
+      <span>Ny aksjonær</span>
+    </button>
+  );
+
+  const totalShares = shareholders.reduce((sum, sh) => sum + sh.shareCount, 0);
+  const activeShareholderCount = shareholders.filter(sh => sh.isActive).length;
+  const averageOwnership = shareholders.length > 0 ? (100 / shareholders.length).toFixed(1) : '0';
+
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-16">
-        <div>
-          <h1 className="text-5xl font-extralight text-neutral-900 mb-3">Shareholders</h1>
-          <p className="text-lg font-light text-neutral-600">
-            Manage company shareholders and ownership structure
-          </p>
-        </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-neutral-900 text-white text-sm font-light hover:bg-neutral-800 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add Shareholder</span>
-        </button>
-      </div>
-
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
-        <div className="bg-white border border-neutral-200 p-8">
-          <div className="flex items-center justify-between mb-6">
-            <Building2 className="h-6 w-6 text-neutral-600" />
-            <TrendingUp className="h-5 w-5 text-green-600" />
+    <PageLayout
+      title="Aksjonærer"
+      subtitle={`Administrer selskapsaksjonærer og eierskapsstruktur (${filteredShareholders.length} aksjonærer)`}
+      actions={actions}
+    >
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-teal-100 p-3 rounded-xl">
+              <Building2 className="h-5 w-5 text-teal-700" />
+            </div>
           </div>
-          <p className="text-xs font-light text-neutral-500 mb-3 uppercase tracking-wider">Total Shareholders</p>
-          <p className="text-4xl font-extralight text-neutral-900">{shareholders.length}</p>
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Totale aksjonærer</p>
+          <p className="text-3xl font-serif text-teal-900">{shareholders.length.toLocaleString('nb-NO')}</p>
         </div>
-
-        <div className="bg-white border border-neutral-200 p-8">
-          <div className="flex items-center justify-between mb-6">
-            <TrendingUp className="h-6 w-6 text-neutral-600" />
+        
+        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-teal-100 p-3 rounded-xl">
+              <TrendingUp className="h-5 w-5 text-teal-700" />
+            </div>
           </div>
-          <p className="text-xs font-light text-neutral-500 mb-3 uppercase tracking-wider">Total Shares</p>
-          <p className="text-4xl font-extralight text-neutral-900">{totalShares.toLocaleString()}</p>
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Aktive aksjonærer</p>
+          <p className="text-3xl font-serif text-teal-900">{activeShareholderCount.toLocaleString('nb-NO')}</p>
         </div>
-
-        <div className="bg-white border border-neutral-200 p-8">
-          <div className="flex items-center justify-between mb-6">
-            <Calendar className="h-6 w-6 text-neutral-600" />
+        
+        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-teal-100 p-3 rounded-xl">
+              <Calendar className="h-5 w-5 text-teal-700" />
+            </div>
           </div>
-          <p className="text-xs font-light text-neutral-500 mb-3 uppercase tracking-wider">Active Shareholders</p>
-          <p className="text-4xl font-extralight text-neutral-900">
-            {shareholders.filter(sh => sh.isActive).length}
-          </p>
-        </div>
-
-        <div className="bg-white border border-neutral-200 p-8">
-          <div className="flex items-center justify-between mb-6">
-            <Building2 className="h-6 w-6 text-neutral-600" />
-          </div>
-          <p className="text-xs font-light text-neutral-500 mb-3 uppercase tracking-wider">Avg. Ownership</p>
-          <p className="text-4xl font-extralight text-neutral-900">
-            {shareholders.length > 0 ? (100 / shareholders.length).toFixed(1) : 0}%
-          </p>
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Snitt eierskap</p>
+          <p className="text-3xl font-serif text-teal-900">{averageOwnership}%</p>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="bg-white border border-neutral-200 p-8 mb-12">
+      <div className="bg-white border border-gray-200 p-8 mb-8 rounded-2xl shadow-soft">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="h-5 w-5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search shareholders..."
+              placeholder="Søk etter navn, e-post eller aksjeklasse..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           </div>
 
-          {/* Controls */}
-          <div className="flex items-center gap-4">
+          {/* Sort Controls */}
+          <div className="flex gap-2">
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             >
-              <option value="shares">Sort by Shares</option>
-              <option value="name">Sort by Name</option>
-              <option value="percentage">Sort by %</option>
+              <option value="name">Navn</option>
+              <option value="shareCount">Antall aksjer</option>
+              <option value="ownershipPercentage">Eierskap %</option>
+              <option value="registrationDate">Registreringsdato</option>
             </select>
-
+            
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="px-3 py-2 border border-neutral-300 text-neutral-600 hover:text-neutral-900 transition-colors text-sm"
+              className="px-3 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
             >
               {sortOrder === 'asc' ? '↑' : '↓'}
-            </button>
-
-            <div className="flex border border-neutral-300">
-              <button
-                onClick={() => setViewMode('cards')}
-                className={`px-3 py-2 text-sm ${viewMode === 'cards' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-600 hover:text-neutral-900'} transition-colors`}
-              >
-                Cards
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`px-3 py-2 text-sm border-l border-neutral-300 ${viewMode === 'list' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-600 hover:text-neutral-900'} transition-colors`}
-              >
-                List
-              </button>
-            </div>
-
-            <button
-              onClick={handleExportCSV}
-              className="px-3 py-2 border border-neutral-300 text-neutral-600 hover:text-neutral-900 transition-colors"
-              title="Export to CSV"
-            >
-              <Download className="h-4 w-4" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Shareholders Display */}
-      {viewMode === 'cards' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredShareholders.map((shareholder) => (
-            <div key={shareholder.id} className="bg-white border border-neutral-200 p-6 hover:border-neutral-400 transition-colors flex flex-col h-full">
-              <div className="flex items-start justify-between mb-4">
-                <div className="h-10 w-10 bg-neutral-200 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-neutral-700">
-                    {shareholder.name?.charAt(0) || '?'}{shareholder.name?.split(' ')[1]?.charAt(0) || ''}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className={`h-2 w-2 rounded-full ${shareholder.isActive ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <button className="text-neutral-400 hover:text-neutral-600 transition-colors">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="mb-4 flex-1">
-                <h3 className="text-xl font-light text-neutral-900 mb-2">
-                  {shareholder.name}
-                </h3>
-                <div className="flex items-center space-x-1 text-sm text-neutral-500 mb-2">
-                  <Mail className="h-3 w-3" />
-                  <span>{shareholder.email}</span>
-                </div>
-                <div className="min-h-[1.25rem] mb-2">
-                  {shareholder.phone && (
-                    <div className="flex items-center space-x-1 text-sm text-neutral-500">
-                      <Phone className="h-3 w-3" />
-                      <span>{shareholder.phone}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="min-h-[1.25rem]">
-                  {shareholder.address && (
-                    <div className="flex items-center space-x-1 text-sm text-neutral-500">
-                      <MapPin className="h-3 w-3" />
-                      <span>{shareholder.address}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="mt-auto">
-                <div className="border-t border-neutral-200 pt-4 mb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-neutral-600">Shares</span>
-                    <span className="text-sm font-medium text-neutral-900">
-                      {shareholder.shareCount.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-neutral-600">Ownership</span>
-                    <span className="text-sm font-medium text-neutral-900">
-                      {shareholder.sharePercentage.toFixed(2)}%
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => openEditModal(shareholder)}
-                    className="flex-1 py-2 border border-neutral-300 text-sm text-neutral-600 hover:text-neutral-900 hover:border-neutral-400 transition-colors"
-                  >
-                    <Edit3 className="h-4 w-4 mx-auto" />
-                  </button>
-                  <button
-                    onClick={() => openDeleteModal(shareholder)}
-                    className="flex-1 py-2 border border-red-300 text-sm text-red-600 hover:text-red-800 hover:border-red-400 transition-colors"
-                  >
-                    <Trash2 className="h-4 w-4 mx-auto" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white border border-neutral-200">
-          {/* Minimal List Header */}
-          <div className="p-8 border-b border-neutral-200">
-            <div className="grid grid-cols-12 gap-4 text-xs font-light text-neutral-500 uppercase tracking-wider">
-              <div className="col-span-4">Shareholder</div>
-              <div className="col-span-2">Shares</div>
-              <div className="col-span-2">Ownership</div>
-              <div className="col-span-2">Status</div>
-              <div className="col-span-2">Actions</div>
-            </div>
-          </div>
-
-          {/* Minimal List Items */}
-          <div className="divide-y divide-neutral-100">
-            {filteredShareholders.map((shareholder) => (
-              <div key={shareholder.id} className="p-8 hover:bg-neutral-50 transition-colors">
-                <div className="grid grid-cols-12 gap-4 items-center">
-                  {/* Shareholder Info */}
-                  <div className="col-span-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="h-12 w-12 bg-neutral-200 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium text-neutral-700">
-                          {shareholder.name?.charAt(0) || '?'}{shareholder.name?.split(' ')[1]?.charAt(0) || ''}
-                        </span>
+      {/* Shareholders Table */}
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-soft overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksjonær</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kontakt</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksjer</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Eierskap</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Handlinger</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredShareholders.map((shareholder) => (
+                <tr key={shareholder.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
+                        <User className="h-5 w-5 text-teal-700" />
                       </div>
-                      <div>
-                        <p className="text-lg font-light text-neutral-900 mb-1">
-                          {shareholder.name}
-                        </p>
-                        <p className="text-sm text-neutral-500">{shareholder.email}</p>
-                        {(shareholder.phone || shareholder.address) && (
-                          <div className="flex items-center space-x-4 text-xs text-neutral-400 mt-1">
-                            {shareholder.phone && (
-                              <div className="flex items-center space-x-1">
-                                <Phone className="h-3 w-3" />
-                                <span>{shareholder.phone}</span>
-                              </div>
-                            )}
-                            {shareholder.address && (
-                              <div className="flex items-center space-x-1">
-                                <MapPin className="h-3 w-3" />
-                                <span>{shareholder.address}</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">{shareholder.name}</div>
+                        <div className="text-sm text-gray-500">Klasse {shareholder.shareClass}</div>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Shares */}
-                  <div className="col-span-2">
-                    <p className="text-lg font-light text-neutral-900">
-                      {shareholder.shareCount.toLocaleString()}
-                    </p>
-                  </div>
-
-                  {/* Ownership */}
-                  <div className="col-span-2">
-                    <p className="text-lg font-light text-neutral-900">
-                      {shareholder.sharePercentage.toFixed(2)}%
-                    </p>
-                  </div>
-
-                  {/* Status */}
-                  <div className="col-span-2">
-                    <div className="flex items-center space-x-2">
-                      <div className={`h-2 w-2 rounded-full ${shareholder.isActive ? 'bg-green-500' : 'bg-red-500'}`} />
-                      <span className="text-sm font-light text-neutral-600">
-                        {shareholder.isActive ? 'Active' : 'Inactive'}
-                      </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-900 flex items-center mb-1">
+                      <Mail className="h-4 w-4 text-gray-400 mr-2" />
+                      {shareholder.email}
                     </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="col-span-2">
-                    <div className="flex items-center space-x-3">
+                    {shareholder.contactPhone && (
+                      <div className="text-sm text-gray-500 flex items-center">
+                        <Phone className="h-4 w-4 text-gray-400 mr-2" />
+                        {shareholder.contactPhone}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      {shareholder.shareCount.toLocaleString('nb-NO')}
+                    </div>
+                    <div className="text-sm text-gray-500">av {totalShares.toLocaleString('nb-NO')}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      {shareholder.ownershipPercentage.toFixed(2)}%
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                      shareholder.isActive
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {shareholder.isActive ? 'Aktiv' : 'Inaktiv'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex space-x-2">
                       <button
-                        onClick={() => openEditModal(shareholder)}
-                        className="p-2 border border-neutral-300 text-neutral-600 hover:text-neutral-900 hover:border-neutral-400 transition-colors"
+                        onClick={() => {
+                          setSelectedShareholder(shareholder);
+                          setShowEditModal(true);
+                        }}
+                        className="text-teal-600 hover:text-teal-900"
                       >
-                        <Edit3 className="h-4 w-4" />
+                        <Edit className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => openDeleteModal(shareholder)}
-                        className="p-2 border border-red-300 text-red-600 hover:text-red-800 hover:border-red-400 transition-colors"
+                        onClick={() => {
+                          setSelectedShareholder(shareholder);
+                          setShowDeleteModal(true);
+                        }}
+                        className="text-red-600 hover:text-red-900"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
 
-      {filteredShareholders.length === 0 && (
-        <div className="text-center py-12 bg-white border border-neutral-200">
-          <Building2 className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-          <p className="text-sm text-neutral-500">No shareholders found</p>
-        </div>
-      )}
-
-      {/* Add Shareholder Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white max-w-md w-full border border-neutral-200">
-            <div className="p-6 border-b border-neutral-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-light text-neutral-900">Add Shareholder</h2>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className="text-neutral-400 hover:text-neutral-600 transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+      {/* Create Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-serif text-gray-900">Ny aksjonær</h3>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-            <form onSubmit={handleAddShareholder} className="p-6">
-              <div className="space-y-4">
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Navn</label>
+                <input
+                  type="text"
+                  value={newShareholder.name || ''}
+                  onChange={(e) => setNewShareholder({ ...newShareholder, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">E-post</label>
+                <input
+                  type="email"
+                  value={newShareholder.email || ''}
+                  onChange={(e) => setNewShareholder({ ...newShareholder, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-neutral-700 mb-2">Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
-                    placeholder="John Doe"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-neutral-700 mb-2">Email *</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
-                    placeholder="john@example.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-neutral-700 mb-2">Phone</label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    className="w-full px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
-                    placeholder="+47 123 45 678"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-neutral-700 mb-2">Shares</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Antall aksjer</label>
                   <input
                     type="number"
-                    min="0"
-                    value={formData.shares}
-                    onChange={(e) => setFormData(prev => ({ ...prev, shares: parseInt(e.target.value) || 0 }))}
-                    className="w-full px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
-                    placeholder="1000"
+                    value={newShareholder.shareCount || 0}
+                    onChange={(e) => setNewShareholder({ ...newShareholder, shareCount: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Eierskap %</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={newShareholder.ownershipPercentage || 0}
+                    onChange={(e) => setNewShareholder({ ...newShareholder, ownershipPercentage: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div className="flex space-x-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-2 border border-neutral-300 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  className="flex-1 py-2 bg-neutral-900 text-white text-sm hover:bg-neutral-800 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2"
-                >
-                  {actionLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Adding...</span>
-                    </>
-                  ) : (
-                    <span>Add Shareholder</span>
-                  )}
-                </button>
-              </div>
-            </form>
+            </div>
+            
+            <div className="flex space-x-3 mt-6">
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Avbryt
+              </button>
+              <button
+                onClick={handleCreateShareholder}
+                className="flex-1 px-4 py-2 bg-teal-700 text-white rounded-xl hover:bg-teal-800 transition-colors"
+              >
+                Opprett
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Edit Shareholder Modal */}
+      {/* Edit Modal */}
       {showEditModal && selectedShareholder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white max-w-md w-full border border-neutral-200">
-            <div className="p-6 border-b border-neutral-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-light text-neutral-900">Edit Shareholder</h2>
-                <button
-                  onClick={() => setShowEditModal(false)}
-                  className="text-neutral-400 hover:text-neutral-600 transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-serif text-gray-900">Rediger aksjonær</h3>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-            <form onSubmit={handleEditShareholder} className="p-6">
-              <div className="space-y-4">
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Navn</label>
+                <input
+                  type="text"
+                  value={selectedShareholder.name}
+                  onChange={(e) => setSelectedShareholder({ ...selectedShareholder, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">E-post</label>
+                <input
+                  type="email"
+                  value={selectedShareholder.email}
+                  onChange={(e) => setSelectedShareholder({ ...selectedShareholder, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-neutral-700 mb-2">Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-neutral-700 mb-2">Email *</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-neutral-700 mb-2">Phone</label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    className="w-full px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-neutral-700 mb-2">Shares</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Antall aksjer</label>
                   <input
                     type="number"
-                    min="0"
-                    value={formData.shares}
-                    onChange={(e) => setFormData(prev => ({ ...prev, shares: parseInt(e.target.value) || 0 }))}
-                    className="w-full px-3 py-2 border border-neutral-300 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
+                    value={selectedShareholder.shareCount}
+                    onChange={(e) => setSelectedShareholder({ ...selectedShareholder, shareCount: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Eierskap %</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={selectedShareholder.ownershipPercentage}
+                    onChange={(e) => setSelectedShareholder({ ...selectedShareholder, ownershipPercentage: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div className="flex space-x-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowEditModal(false)}
-                  className="flex-1 py-2 border border-neutral-300 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  className="flex-1 py-2 bg-neutral-900 text-white text-sm hover:bg-neutral-800 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2"
-                >
-                  {actionLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <span>Save Changes</span>
-                  )}
-                </button>
-              </div>
-            </form>
+            </div>
+            
+            <div className="flex space-x-3 mt-6">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Avbryt
+              </button>
+              <button
+                onClick={handleUpdateShareholder}
+                className="flex-1 px-4 py-2 bg-teal-700 text-white rounded-xl hover:bg-teal-800 transition-colors"
+              >
+                Oppdater
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Modal */}
       {showDeleteModal && selectedShareholder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white max-w-md w-full border border-neutral-200">
-            <div className="p-6 border-b border-neutral-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-light text-neutral-900">Delete Shareholder</h2>
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="text-neutral-400 hover:text-neutral-600 transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-serif text-gray-900">Slett aksjonær</h3>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-            <div className="p-6">
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="h-12 w-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <AlertCircle className="h-6 w-6 text-red-600" />
-                </div>
-                <div>
-                  <p className="text-neutral-900 font-medium">Are you sure?</p>
-                  <p className="text-sm text-neutral-600">
-                    Delete shareholder "{selectedShareholder.name}" permanently? This action cannot be undone.
-                  </p>
-                </div>
-              </div>
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 py-2 border border-neutral-300 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteShareholder}
-                  disabled={actionLoading}
-                  className="flex-1 py-2 bg-red-600 text-white text-sm hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2"
-                >
-                  {actionLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Deleting...</span>
-                    </>
-                  ) : (
-                    <span>Delete</span>
-                  )}
-                </button>
-              </div>
+            
+            <p className="text-gray-600 mb-6">
+              Er du sikker på at du vil slette aksjonær "{selectedShareholder.name}"? Denne handlingen kan ikke angres.
+            </p>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Avbryt
+              </button>
+              <button
+                onClick={handleDeleteShareholder}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
+              >
+                Slett
+              </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 };
 

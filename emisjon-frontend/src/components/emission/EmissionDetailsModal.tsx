@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { FiX, FiDatabase, FiActivity, FiDownload } from 'react-icons/fi';
+import { FiDatabase, FiActivity, FiDownload } from 'react-icons/fi';
+import Modal from '@/components/ui/Modal';
 import { Button } from '@/components/ui/button';
 import { useNorwegianNumber } from '@/hooks/useNorwegianFormat';
-import type { Emission } from '@/components/emission/types';
+import type { Emission } from '@/types/emission';
 import { useAppSelector } from '@/store/hooks';
 import { ErrorAlert } from '@/components/ui/error-alert';
 import { useErrorAlert } from '@/hooks/useErrorAlert';
+import { sanitizeHtml } from '@/utils/sanitize';
+import { downloadPdf } from '@/utils/download';
 import SnapshotModal from './SnapshotModal';
 import AuditLogModal from './AuditLogModal';
 
@@ -39,56 +42,14 @@ export default function EmissionDetailsModal({
 
   const handleDownloadPdf = async () => {
     if (!emission?.presentationFileUrl || isDownloading) return;
-    
     setIsDownloading(true);
-    
     try {
-      // Show loading state
-      console.log('Starting PDF download...');
-      
-      // Fetch the PDF file directly
-      const response = await fetch(emission.presentationFileUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/pdf',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to download PDF: ${response.statusText}`);
-      }
-      
-      // Get the blob from the response
-      const blob = await response.blob();
-      
-      // Create a blob URL
-      const blobUrl = window.URL.createObjectURL(blob);
-      
-      // Create a temporary anchor element to trigger download
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = `${emission.title.replace(/\s+/g, '_')}_presentation.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      
-      // Clean up
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-      
-      console.log('PDF download completed');
-    } catch (error) {
-      console.error('Error downloading PDF:', error);
-      // Fallback: try with fl_attachment flag
-      try {
-        let downloadUrl = emission.presentationFileUrl;
-        if (downloadUrl.includes('cloudinary.com') && downloadUrl.includes('/raw/upload/')) {
-          downloadUrl = downloadUrl.replace('/raw/upload/', '/raw/upload/fl_attachment/');
-        }
-        window.open(downloadUrl, '_blank');
-      } catch (fallbackError) {
-        console.error('Fallback download also failed:', fallbackError);
-        showError('Failed to download the PDF. Please try again later.', 'Download Failed');
-      }
+      await downloadPdf(
+        emission.presentationFileUrl,
+        `${emission.title.replace(/\s+/g, '_')}_presentation.pdf`
+      );
+    } catch (e) {
+      showError('Failed to download the PDF. Please try again later.', 'Download Failed');
     } finally {
       setIsDownloading(false);
     }
@@ -115,39 +76,89 @@ export default function EmissionDetailsModal({
   const dilution = ((emission.newSharesOffered / emission.sharesAfter) * 100).toFixed(2);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-3xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-border overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <div>
-            <h2 className="text-2xl font-bold text-card-foreground">
-              {emission.title}
-            </h2>
-            <div className="flex items-center gap-3 mt-2">
-              {getStatusBadge(emission.status)}
-              <span className="text-sm text-muted-foreground">
-                Created {new Date(emission.createdAt).toLocaleDateString('nb-NO')}
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-muted-foreground hover:text-card-foreground transition-colors cursor-pointer"
-          >
-            <FiX size={24} />
-          </button>
-        </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={emission.title}
+      size="lg"
+      actions={
+        <div className="flex items-center gap-3">
+          {/* Admin Tools */}
+          {isAdmin && (
+            <>
+              <Button
+                variant="outline"
+                onClick={() => setShowSnapshotModal(true)}
+                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-gray-300"
+              >
+                <FiDatabase size={16} />
+                <span>Snapshots</span>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowAuditLogModal(true)}
+                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-gray-300"
+              >
+                <FiActivity size={16} />
+                <span>Audit Log</span>
+              </Button>
+            </>
+          )}
 
-        {/* Content */}
-        <div className="flex-1 p-6 overflow-y-auto">
+          {/* Action Buttons */}
+          {isAdmin && emission.status === 'PREVIEW' && onActivate && (
+            <Button
+              onClick={onActivate}
+              variant="default"
+              className="cursor-pointer"
+            >
+              Activate
+            </Button>
+          )}
+          {canSubscribe && onSubscribe && (
+            <Button
+              onClick={onSubscribe}
+              className="cursor-pointer"
+            >
+              Subscribe
+            </Button>
+          )}
+          {isAdmin && emission.status === 'ACTIVE' && onComplete && (
+            <Button
+              onClick={onComplete}
+              variant="default"
+              className="cursor-pointer bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 border-0 transition-colors"
+            >
+              Complete Emission
+            </Button>
+          )}
+          {isAdmin && user?.level === 2 && emission.status === 'COMPLETED' && onFinalize && (
+            <Button
+              onClick={onFinalize}
+              variant="default"
+              className="cursor-pointer bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 border-0 transition-colors"
+            >
+              Finalize Emission
+            </Button>
+          )}
+        </div>
+      }
+    >
+      {/* Status and Created Date */}
+      <div className="flex items-center gap-3 mb-6">
+        {getStatusBadge(emission.status)}
+        <span className="text-sm text-muted-foreground">
+          Created {new Date(emission.createdAt || '').toLocaleDateString('nb-NO')}
+        </span>
+      </div>
           {/* Description */}
           <div className="mb-6">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
               Description
             </h3>
-            <div 
+            <div
               className="prose prose-sm dark:prose-invert max-w-none text-card-foreground [&_ul]:list-disc [&_ol]:list-decimal [&_li]:ml-4"
-              dangerouslySetInnerHTML={{ __html: emission.description }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(emission.description) }}
             />
           </div>
 
@@ -336,81 +347,7 @@ export default function EmissionDetailsModal({
               </div>
             </div>
           )}
-        </div>
-
-        {/* Footer - Fixed at bottom */}
-        <div className="flex items-center justify-between p-6 border-t border-border bg-white dark:bg-gray-800">
-          {/* Admin Tools */}
-          <div className="flex items-center gap-2">
-            {isAdmin && (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowSnapshotModal(true)}
-                  className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-gray-300"
-                >
-                  <FiDatabase size={16} />
-                  <span>Snapshots</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAuditLogModal(true)}
-                  className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-gray-300"
-                >
-                  <FiActivity size={16} />
-                  <span>Audit Log</span>
-                </Button>
-              </>
-            )}
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="text-gray-700 dark:text-gray-300"
-          >
-            Close
-          </Button>
-          {isAdmin && emission.status === 'PREVIEW' && onActivate && (
-            <Button
-              onClick={onActivate}
-              variant="default"
-              className="cursor-pointer"
-            >
-              Activate
-            </Button>
-          )}
-          {canSubscribe && onSubscribe && (
-            <Button
-              onClick={onSubscribe}
-              className="cursor-pointer"
-            >
-              Subscribe
-            </Button>
-          )}
-          {isAdmin && emission.status === 'ACTIVE' && onComplete && (
-            <Button
-              onClick={onComplete}
-              variant="default"
-              className="cursor-pointer bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 border-0 transition-colors"
-            >
-              Complete Emission
-            </Button>
-          )}
-          {isAdmin && user?.level === 2 && emission.status === 'COMPLETED' && onFinalize && (
-            <Button
-              onClick={onFinalize}
-              variant="default"
-              className="cursor-pointer bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 border-0 transition-colors"
-            >
-              Finalize Emission
-            </Button>
-          )}
-          </div>
-        </div>
-      </div>
+    </Modal>
       
       {/* Modals */}
       {showSnapshotModal && emission && (

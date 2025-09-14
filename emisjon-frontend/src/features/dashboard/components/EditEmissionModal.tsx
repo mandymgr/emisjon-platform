@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FiX, FiUpload, FiFile } from 'react-icons/fi';
 import * as emissionsService from '../services/emissionsService';
-import type { Emission, UpdateEmissionData } from '@/components/emission/types';
+import type { Emission, UpdateEmissionData } from '@/types/emission';
 import RichTextEditor from '@/components/RichTextEditor';
 
 interface EditEmissionModalProps {

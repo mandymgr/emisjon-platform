@@ -7,7 +7,7 @@ import * as shareholdersService from '../services/shareholdersService';
 import { useNorwegianNumber } from '@/hooks/useNorwegianFormat';
 import RichTextEditor from '@/components/RichTextEditor';
 import { emissionFormSchema, type EmissionFormData } from '../schemas/emissionSchema';
-import type { CreateEmissionData } from '@/components/emission/types';
+import type { CreateEmissionData } from '@/types/emission';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

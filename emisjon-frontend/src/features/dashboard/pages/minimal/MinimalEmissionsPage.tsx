@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { getAllEmissions } from '../services/emissionsService';
+import PageLayout from '@/components/layout/PageLayout';
 import {
   TrendingUp,
   Calendar,
@@ -70,23 +71,31 @@ const MinimalEmissionsPage = () => {
 
   if (!hasAccess) {
     return (
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white border border-neutral-200 p-12 text-center">
-          <UserX className="h-16 w-16 text-neutral-300 mx-auto mb-6" />
-          <h2 className="text-2xl font-light text-neutral-900 mb-3">Level 3+ Access Required</h2>
-          <p className="text-neutral-600 max-w-md mx-auto">
-            Emissions management requires Level 3+ access or Admin privileges. Contact your administrator for access.
+      <PageLayout
+        title="Emisjoner"
+        subtitle="Tilgang nektet"
+      >
+        <div className="bg-white border border-gray-200 p-12 text-center rounded-2xl shadow-soft">
+          <UserX className="h-16 w-16 text-gray-400 mx-auto mb-6" />
+          <h2 className="text-2xl font-serif text-teal-900 mb-3">Nivå 3+ tilgang kreves</h2>
+          <p className="text-gray-600 max-w-md mx-auto">
+            Emisjonsadministrasjon krever Nivå 3+ tilgang eller adminrettigheter. Kontakt administrator for tilgang.
           </p>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-neutral-400" />
-      </div>
+      <PageLayout
+        title="Emisjoner"
+        subtitle="Laster emisjoner..."
+      >
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-8 w-8 animate-spin text-teal-700" />
+        </div>
+      </PageLayout>
     );
   }
 
@@ -100,85 +109,88 @@ const MinimalEmissionsPage = () => {
     }
   };
 
-  return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-12">
-        <div>
-          <h1 className="text-4xl font-light text-neutral-900 mb-3">
-            Emissions
-          </h1>
-          <p className="text-neutral-600">
-            Manage company share emissions and capital raising activities
-          </p>
-        </div>
-        <button className="flex items-center space-x-2 px-6 py-3 bg-neutral-900 text-white text-sm font-light hover:bg-neutral-800 transition-colors">
-          <Plus className="h-4 w-4" />
-          <span>New Emission</span>
-        </button>
-      </div>
+  const actions = (
+    <button className="bg-teal-700 hover:bg-teal-900 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors">
+      <Plus className="h-4 w-4" />
+      <span>Ny emisjon</span>
+    </button>
+  );
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-        <div className="bg-white border border-neutral-200 p-8">
-          <div className="flex items-center justify-between mb-6">
-            <Activity className="h-6 w-6 text-neutral-600" />
+  return (
+    <PageLayout
+      title="Emisjoner"
+      subtitle={`Administrer selskapsemisjoner og kapitalinnhenting (${emissions.length} emisjoner)`}
+      actions={actions}
+    >
+      {/* Stats Oversikt */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-teal-100 p-3 rounded-xl">
+              <Activity className="h-5 w-5 text-teal-700" />
+            </div>
             <ArrowUpRight className="h-4 w-4 text-green-600" />
           </div>
-          <p className="text-sm text-neutral-600 mb-2">Total Emissions</p>
-          <p className="text-3xl font-light text-neutral-900">
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Totale emisjoner</p>
+          <p className="text-3xl font-serif text-teal-900">
             {stats?.totalEmissions || 0}
           </p>
         </div>
 
-        <div className="bg-white border border-neutral-200 p-8">
-          <div className="flex items-center justify-between mb-6">
-            <TrendingUp className="h-6 w-6 text-neutral-600" />
+        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-blue-100 p-3 rounded-xl">
+              <TrendingUp className="h-5 w-5 text-blue-700" />
+            </div>
             <ArrowUpRight className="h-4 w-4 text-blue-600" />
           </div>
-          <p className="text-sm text-neutral-600 mb-2">Active</p>
-          <p className="text-3xl font-light text-neutral-900">
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Aktive</p>
+          <p className="text-3xl font-serif text-teal-900">
             {stats?.activeEmissions || 0}
           </p>
         </div>
 
-        <div className="bg-white border border-neutral-200 p-8">
-          <div className="flex items-center justify-between mb-6">
-            <DollarSign className="h-6 w-6 text-neutral-600" />
+        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-green-100 p-3 rounded-xl">
+              <DollarSign className="h-5 w-5 text-green-700" />
+            </div>
             <ArrowDownRight className="h-4 w-4 text-orange-600" />
           </div>
-          <p className="text-sm text-neutral-600 mb-2">Total Value</p>
-          <p className="text-3xl font-light text-neutral-900">
-            ${stats?.totalValue ? Math.floor(stats.totalValue / 1000000) : 0}M
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total verdi</p>
+          <p className="text-3xl font-serif text-teal-900">
+            {stats?.totalValue ? Math.floor(stats.totalValue / 1000000) : 0}M kr
           </p>
         </div>
 
-        <div className="bg-white border border-neutral-200 p-8">
-          <div className="flex items-center justify-between mb-6">
-            <Users className="h-6 w-6 text-neutral-600" />
+        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-purple-100 p-3 rounded-xl">
+              <Users className="h-5 w-5 text-purple-700" />
+            </div>
           </div>
-          <p className="text-sm text-neutral-600 mb-2">Subscriptions</p>
-          <p className="text-3xl font-light text-neutral-900">
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Tegninger</p>
+          <p className="text-3xl font-serif text-teal-900">
             {stats?.totalSubscriptions || 0}
           </p>
         </div>
       </div>
 
-      {/* Emissions Grid - Gallery Style */}
-      <div className="bg-white border border-neutral-200">
-        <div className="p-8 border-b border-neutral-200">
-          <h2 className="text-xl font-light text-neutral-900">Share Emissions</h2>
+      {/* Emisjoner Grid */}
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-soft">
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-xl font-serif text-teal-900">Aksjemisjoner</h2>
         </div>
 
-        <div className="p-8">
+        <div className="p-6">
           {emissions.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-              {emissions.map((emission: any) => (
-                <div key={emission.id} className="border border-neutral-200 hover:border-neutral-400 transition-colors">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              {emissions.map((emission) => (
+                <div key={emission.id} className="border border-gray-200 hover:border-teal-200 hover:shadow-soft transition-all rounded-xl overflow-hidden">
                   {/* Header */}
-                  <div className="p-6 border-b border-neutral-100">
+                  <div className="p-6 border-b border-gray-100">
                     <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-lg font-medium text-neutral-900 line-clamp-2">
+                      <h3 className="text-lg font-medium text-gray-900 line-clamp-2">
                         {emission.title}
                       </h3>
                       <div className={`px-3 py-1 text-xs font-medium rounded-full ml-3 flex-shrink-0 ${getStatusColor(emission.status)}`}>
@@ -187,7 +199,7 @@ const MinimalEmissionsPage = () => {
                     </div>
 
                     {emission.description && (
-                      <p className="text-sm text-neutral-600 line-clamp-3 mb-4">
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4">
                         {emission.description}
                       </p>
                     )}
@@ -197,53 +209,53 @@ const MinimalEmissionsPage = () => {
                   <div className="p-6 space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-neutral-600">Shares Available</p>
-                        <p className="font-medium text-neutral-900">
-                          {emission.sharesAvailable?.toLocaleString() || 'N/A'}
+                        <p className="text-gray-600">Aksjer tilgjengelig</p>
+                        <p className="font-medium text-gray-900">
+                          {emission.sharesAvailable?.toLocaleString('nb-NO') || 'N/A'}
                         </p>
                       </div>
                       <div>
-                        <p className="text-neutral-600">Price per Share</p>
-                        <p className="font-medium text-neutral-900">
-                          ${emission.pricePerShare?.toFixed(2) || 'N/A'}
+                        <p className="text-gray-600">Pris per aksje</p>
+                        <p className="font-medium text-gray-900">
+                          {emission.pricePerShare?.toFixed(2) || 'N/A'} kr
                         </p>
                       </div>
                       <div>
-                        <p className="text-neutral-600">Subscriptions</p>
-                        <p className="font-medium text-neutral-900">
+                        <p className="text-gray-600">Tegninger</p>
+                        <p className="font-medium text-gray-900">
                           {emission.subscriptions}
                         </p>
                       </div>
                       <div>
-                        <p className="text-neutral-600">Total Value</p>
-                        <p className="font-medium text-neutral-900">
-                          ${Math.floor(emission.totalValue / 1000)}K
+                        <p className="text-gray-600">Total verdi</p>
+                        <p className="font-medium text-gray-900">
+                          {Math.floor(emission.totalValue / 1000)}K kr
                         </p>
                       </div>
                     </div>
 
-                    {/* Dates */}
-                    <div className="pt-4 border-t border-neutral-100">
-                      <div className="flex items-center space-x-2 text-xs text-neutral-500 mb-2">
+                    {/* Datoer */}
+                    <div className="pt-4 border-t border-gray-100">
+                      <div className="flex items-center space-x-2 text-xs text-gray-500 mb-2">
                         <Calendar className="h-3 w-3" />
                         <span>
-                          {new Date(emission.startDate).toLocaleDateString()} - {' '}
-                          {new Date(emission.endDate).toLocaleDateString()}
+                          {new Date(emission.startDate).toLocaleDateString('nb-NO')} - {' '}
+                          {new Date(emission.endDate).toLocaleDateString('nb-NO')}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Actions */}
+                  {/* Handlinger */}
                   <div className="p-6 pt-0">
                     <div className="flex space-x-2">
-                      <button className="flex-1 py-2 border border-neutral-300 text-sm text-neutral-600 hover:text-neutral-900 hover:border-neutral-400 transition-colors flex items-center justify-center space-x-1">
+                      <button className="flex-1 py-2 border border-gray-300 text-sm text-gray-600 hover:text-teal-700 hover:border-teal-300 transition-colors flex items-center justify-center space-x-1 rounded-lg">
                         <Eye className="h-3 w-3" />
-                        <span>View</span>
+                        <span>Vis</span>
                       </button>
-                      <button className="flex-1 py-2 bg-neutral-900 text-white text-sm hover:bg-neutral-800 transition-colors flex items-center justify-center space-x-1">
+                      <button className="flex-1 py-2 bg-teal-700 text-white text-sm hover:bg-teal-800 transition-colors flex items-center justify-center space-x-1 rounded-lg">
                         <Users className="h-3 w-3" />
-                        <span>Subscribe</span>
+                        <span>Tegn</span>
                       </button>
                     </div>
                   </div>
@@ -252,19 +264,19 @@ const MinimalEmissionsPage = () => {
             </div>
           ) : (
             <div className="text-center py-16">
-              <Activity className="h-16 w-16 text-neutral-300 mx-auto mb-6" />
-              <h3 className="text-xl font-light text-neutral-900 mb-3">No Emissions Yet</h3>
-              <p className="text-neutral-600 mb-6">
-                Create your first share emission to start raising capital
+              <Activity className="h-16 w-16 text-gray-300 mx-auto mb-6" />
+              <h3 className="text-xl font-serif text-teal-900 mb-3">Ingen emisjoner ennå</h3>
+              <p className="text-gray-600 mb-6">
+                Opprett din første aksjeemisjon for å starte kapitalinnhenting
               </p>
-              <button className="px-6 py-3 bg-neutral-900 text-white text-sm font-light hover:bg-neutral-800 transition-colors">
-                Create Emission
+              <button className="px-6 py-3 bg-teal-700 text-white text-sm hover:bg-teal-800 transition-colors rounded-xl">
+                Opprett emisjon
               </button>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

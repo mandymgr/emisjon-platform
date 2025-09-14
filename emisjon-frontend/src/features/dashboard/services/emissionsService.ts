@@ -1,5 +1,5 @@
 import axiosInstance from '@/lib/axios';
-import type { Emission, CreateEmissionData, UpdateEmissionData, ShareholderSnapshot, EmissionAuditLog } from '@/components/emission/types';
+import type { Emission, CreateEmissionData, UpdateEmissionData, ShareholderSnapshot, EmissionAuditLog } from '@/types/emission';
 
 const API_URL = '/api/emissions';
 

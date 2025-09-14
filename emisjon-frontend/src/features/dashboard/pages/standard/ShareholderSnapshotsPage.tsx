@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import * as snapshotService from '@/services/snapshotService';
 import * as emissionsService from '../services/emissionsService';
 import type { ShareholderSnapshot } from '@/components/shareholderSnapshot/types';
-import type { Emission } from '@/components/emission/types';
+import type { Emission } from '@/types/emission';
 import SnapshotCard from '@/components/shareholderSnapshot/SnapshotCard';
 import SnapshotDetailsTable from '@/components/shareholderSnapshot/SnapshotDetailsTable';
 import SnapshotComparison from '@/components/shareholderSnapshot/SnapshotComparison';

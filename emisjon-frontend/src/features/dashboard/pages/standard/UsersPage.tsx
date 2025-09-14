@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AccessRestrictedCard } from '@/components/dashboard';
 import { ErrorAlert } from '@/components/ui/error-alert';
 import { useErrorAlert } from '@/hooks/useErrorAlert';
+import PageLayout from '@/components/layout/PageLayout';
 import UserSearchBar from '@/components/user/UserSearchBar';
 import UserTableWithSort from '@/components/user/UserTableWithSort';
 import AddUserModal from '@/components/user/AddUserModal';
@@ -166,29 +167,24 @@ export default function UsersPage() {
   // Access denied for non-admin level 2 users
   if (!isAdminLevel2) {
     return (
-      <div>
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-foreground">Users Management</h2>
-        </div>
-        <AccessRestrictedCard 
-          message="You need Admin Level 2 access to manage users."
+      <PageLayout
+        title="Brukeradministrasjon"
+        subtitle="Du trenger Admin Nivå 2 tilgang for å administrere brukere"
+      >
+        <AccessRestrictedCard
+          message="Du trenger Admin Nivå 2 tilgang for å administrere brukere."
         />
-      </div>
+      </PageLayout>
     );
   }
 
   // Loading state
   if (loading) {
     return (
-      <div>
-        {/* Page header skeleton */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-        </div>
-
+      <PageLayout
+        title="Brukeradministrasjon"
+        subtitle="Laster brukere..."
+      >
         {/* Search bar skeleton */}
         <div className="mb-6 flex gap-4">
           <Skeleton className="h-10 flex-1" />
@@ -196,10 +192,10 @@ export default function UsersPage() {
         </div>
 
         {/* Table skeleton */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-soft">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-900">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3">
                     <Skeleton className="h-4 w-16" />
@@ -221,7 +217,7 @@ export default function UsersPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="bg-white divide-y divide-gray-200">
                 {[...Array(5)].map((_, index) => (
                   <tr key={index}>
                     <td className="px-6 py-4">
@@ -251,38 +247,48 @@ export default function UsersPage() {
             </table>
           </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <p className="text-red-600">{error}</p>
-        <Button onClick={loadUsers} className="mt-4">Retry</Button>
-      </div>
+      <PageLayout
+        title="Brukeradministrasjon"
+        subtitle="Det oppstod en feil ved lasting av brukere"
+      >
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-soft p-6">
+          <p className="text-red-600">{error}</p>
+          <Button onClick={loadUsers} className="mt-4">Prøv igjen</Button>
+        </div>
+      </PageLayout>
     );
   }
 
-  return (
-    <div>
-      {/* Page header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Users Management</h2>
-          <span className="text-sm text-gray-600 dark:text-gray-400">
-            Total Users: {users.length}
-          </span>
-        </div>
-      </div>
+  const actions = (
+    <Button
+      onClick={() => setShowAddModal(true)}
+      className="bg-teal-700 hover:bg-teal-900 text-white"
+    >
+      Ny bruker
+    </Button>
+  );
 
+  return (
+    <PageLayout
+      title="Brukeradministrasjon"
+      subtitle={`Administrer systembrukere (${users.length} brukere)`}
+      actions={actions}
+    >
       {/* Search bar */}
-      <UserSearchBar
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        onAddClick={() => setShowAddModal(true)}
-      />
+      <div className="mb-6">
+        <UserSearchBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onAddClick={() => setShowAddModal(true)}
+        />
+      </div>
 
       {/* Users table */}
       <UserTableWithSort
@@ -327,6 +333,6 @@ export default function UsersPage() {
         title={alertError.title}
         message={alertError.message}
       />
-    </div>
+    </PageLayout>
   );
 }

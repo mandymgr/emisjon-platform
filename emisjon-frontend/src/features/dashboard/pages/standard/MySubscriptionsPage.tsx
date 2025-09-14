@@ -3,6 +3,7 @@ import { useAppSelector } from '@/store/hooks';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AccessRestrictedCard } from '@/components/dashboard';
 import EditSubscriptionModal from '@/components/subscription/EditSubscriptionModal';
+import PageLayout from '@/components/layout/PageLayout';
 import * as subscriptionService from '@/services/subscriptionService';
 import type { Subscription } from '@/types/subscription';
 import { useNorwegianNumber } from '@/hooks/useNorwegianFormat';
@@ -125,18 +126,17 @@ export default function MySubscriptionsPage() {
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-foreground">My Subscriptions</h2>
-      </div>
-
+    <PageLayout
+      title="Mine tegninger"
+      subtitle={`Oversikt over dine emisjonstegninger (${subscriptions.length} tegninger)`}
+    >
       {error && (
-        <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
           {error}
         </div>
       )}
 
-      <div className="bg-card rounded-lg shadow-md border border-border overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-soft border border-gray-200 overflow-hidden">
         {subscriptions.length === 0 ? (
           <div className="p-8 text-center">
             <div className="text-muted-foreground">No subscriptions found</div>
@@ -250,6 +250,6 @@ export default function MySubscriptionsPage() {
         }}
         onClose={() => setEditingSubscription(null)}
       />
-    </div>
+    </PageLayout>
   );
 }

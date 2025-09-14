@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useAppSelector } from '@/store/hooks';
-import { cn } from '@/components/ui/primitive';
+import PageLayout from '@/components/layout/PageLayout';
 
 // Import modular components
 import StatsGrid from '@/components/dashboard/StatsGrid';
@@ -309,68 +309,54 @@ export default function DashboardHome() {
   const activityQuery = useActivityData(10);
 
   return (
-    <div className={cn(
-      "min-h-screen bg-gradient-to-b from-white to-[#F7F7F5] dark:from-[#0C3C4A] dark:to-[#124F62]"
-    )}>
-      <main className="max-w-7xl mx-auto px-6 pb-28">
-        {/* Welcome Header */}
-        <header className="pt-10 pb-12">
-          <h1
-            className="text-display font-normal tracking-tight text-[#124F62] dark:text-white mb-3"
-            style={{ fontFamily: '"EB Garamond", serif' }}
-          >
-            Dashboard
-          </h1>
-          <p className="text-body-large font-light text-black/70 dark:text-white/70">
-            Velkommen tilbake, {firstName}. Her er en oversikt over dine investeringer og aktivitet.
-          </p>
-        </header>
+    <PageLayout
+      title="Dashboard"
+      subtitle={`Velkommen tilbake, ${firstName}. Her er en oversikt over dine investeringer og aktivitet.`}
+    >
+      {/* Content Sections */}
+      <div className="space-y-16">
+        {/* Stats Overview */}
+        <StatsGrid
+          portfolioValue={portfolioQuery.data?.portfolioValue}
+          annualizedReturn={portfolioQuery.data?.annualizedReturn}
+          totalUsers={portfolioQuery.data?.totalUsers}
+          totalShareholders={portfolioQuery.data?.totalShareholders}
+          totalShares={portfolioQuery.data?.totalShares}
+          activeProjects={portfolioQuery.data?.activeProjects}
+          userLevel={userLevel}
+          loading={portfolioQuery.loading}
+        />
 
-        {/* Content Sections */}
-        <div className="space-y-16">
-          {/* Stats Overview */}
-          <StatsGrid
-            portfolioValue={portfolioQuery.data?.portfolioValue}
-            annualizedReturn={portfolioQuery.data?.annualizedReturn}
-            totalUsers={portfolioQuery.data?.totalUsers}
-            totalShareholders={portfolioQuery.data?.totalShareholders}
-            totalShares={portfolioQuery.data?.totalShares}
-            activeProjects={portfolioQuery.data?.activeProjects}
+        {/* Quick Actions */}
+        <QuickActions
+          userLevel={userLevel}
+        />
+
+        {/* Active Emissions */}
+        <ActiveEmissions
+          emissions={emissionsQuery.data}
+          userLevel={userLevel}
+          loading={emissionsQuery.loading}
+          error={emissionsQuery.error || undefined}
+        />
+
+        {/* Bottom Row: Shareholders and Activity */}
+        <div className="grid gap-16 lg:grid-cols-2">
+          <TopShareholders
+            shareholders={shareholdersQuery.data}
             userLevel={userLevel}
-            loading={portfolioQuery.loading}
+            loading={shareholdersQuery.loading}
+            error={shareholdersQuery.error || undefined}
           />
 
-          {/* Quick Actions */}
-          <QuickActions
-            userLevel={userLevel}
+          <RecentActivity
+            activities={activityQuery.data}
+            loading={activityQuery.loading}
+            error={activityQuery.error || undefined}
+            maxItems={8}
           />
-
-          {/* Active Emissions */}
-          <ActiveEmissions
-            emissions={emissionsQuery.data}
-            userLevel={userLevel}
-            loading={emissionsQuery.loading}
-            error={emissionsQuery.error || undefined}
-          />
-
-          {/* Bottom Row: Shareholders and Activity */}
-          <div className="grid gap-16 lg:grid-cols-2">
-            <TopShareholders
-              shareholders={shareholdersQuery.data}
-              userLevel={userLevel}
-              loading={shareholdersQuery.loading}
-              error={shareholdersQuery.error || undefined}
-            />
-
-            <RecentActivity
-              activities={activityQuery.data}
-              loading={activityQuery.loading}
-              error={activityQuery.error || undefined}
-              maxItems={8}
-            />
-          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </PageLayout>
   );
 }

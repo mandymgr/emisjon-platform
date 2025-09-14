@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { getAllSubscriptions } from '@/services/subscriptionService';
+import PageLayout from '@/components/layout/PageLayout';
 import {
   Shield,
   Users,
@@ -111,23 +112,33 @@ const MinimalSubscriptionManagementPage = () => {
 
   if (!hasAccess) {
     return (
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white border border-neutral-200 p-12 text-center">
-          <UserX className="h-16 w-16 text-neutral-300 mx-auto mb-6" />
-          <h2 className="text-2xl font-light text-neutral-900 mb-3">Admin Level 2+ Required</h2>
-          <p className="text-neutral-600 max-w-md mx-auto">
-            Subscription management requires Admin privileges with Level 2+ access. Contact your administrator for access.
-          </p>
+      <PageLayout
+        title="Tilgang nektet"
+        subtitle="Du har ikke tilstrekkelig tilgang til denne siden"
+      >
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-soft">
+            <UserX className="h-16 w-16 text-gray-300 mx-auto mb-6" />
+            <h2 className="text-2xl font-serif text-teal-900 mb-3">Admin Level 2+ påkrevd</h2>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Abonnementsstyring krever administratorrettigheter med Level 2+ tilgang. Kontakt din administrator for tilgang.
+            </p>
+          </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-neutral-400" />
-      </div>
+      <PageLayout
+        title="Laster..."
+        subtitle="Henter abonnementsdata"
+      >
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+        </div>
+      </PageLayout>
     );
   }
 
@@ -150,51 +161,46 @@ const MinimalSubscriptionManagementPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-12">
-        <div className="flex items-center space-x-3 mb-3">
-          <Shield className="h-8 w-8 text-neutral-600" />
-          <h1 className="text-4xl font-light text-neutral-900">
-            Subscription Management
-          </h1>
+    <PageLayout
+      title="Abonnementsstyring"
+      subtitle="Se og administrer alle abonnementsforespørsler"
+      actions={
+        <div className="flex items-center space-x-4">
+          <Shield className="h-6 w-6 text-teal-700" />
         </div>
-        <p className="text-neutral-600">
-          Review and manage all subscription requests across emissions
-        </p>
-      </div>
-
+      }
+    >
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-        <div className="bg-white border border-neutral-200 p-8">
+        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-soft">
           <div className="flex items-center justify-between mb-6">
-            <Users className="h-6 w-6 text-neutral-600" />
+            <Users className="h-6 w-6 text-teal-700" />
             <ArrowUpRight className="h-4 w-4 text-blue-600" />
           </div>
-          <p className="text-sm text-neutral-600 mb-2">Total Subscriptions</p>
-          <p className="text-3xl font-light text-neutral-900">
+          <p className="text-sm text-gray-600 mb-2 uppercase tracking-wider font-light">Totale abonnementer</p>
+          <p className="text-3xl font-serif text-teal-900">
             {stats?.totalSubscriptions || 0}
           </p>
         </div>
 
-        <div className="bg-white border border-neutral-200 p-8">
+        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-soft">
           <div className="flex items-center justify-between mb-6">
-            <Clock className="h-6 w-6 text-neutral-600" />
+            <Clock className="h-6 w-6 text-teal-700" />
             <ArrowUpRight className="h-4 w-4 text-yellow-600" />
           </div>
-          <p className="text-sm text-neutral-600 mb-2">Pending Approval</p>
-          <p className="text-3xl font-light text-neutral-900">
+          <p className="text-sm text-gray-600 mb-2 uppercase tracking-wider font-light">Venter godkjenning</p>
+          <p className="text-3xl font-serif text-teal-900">
             {stats?.pendingApproval || 0}
           </p>
         </div>
 
-        <div className="bg-white border border-neutral-200 p-8">
+        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-soft">
           <div className="flex items-center justify-between mb-6">
-            <TrendingUp className="h-6 w-6 text-neutral-600" />
+            <TrendingUp className="h-6 w-6 text-teal-700" />
             <ArrowDownRight className="h-4 w-4 text-green-600" />
           </div>
-          <p className="text-sm text-neutral-600 mb-2">Approved Today</p>
-          <p className="text-3xl font-light text-neutral-900">
+          <p className="text-sm text-gray-600 mb-2 uppercase tracking-wider font-light">Godkjent i dag</p>
+          <p className="text-3xl font-serif text-teal-900">
             {stats?.approvedToday || 0}
           </p>
         </div>
@@ -371,7 +377,7 @@ const MinimalSubscriptionManagementPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

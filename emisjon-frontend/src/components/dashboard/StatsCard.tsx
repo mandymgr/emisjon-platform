@@ -10,19 +10,19 @@ interface StatsCardProps {
 
 export default function StatsCard({ title, value, icon, loading = false }: StatsCardProps) {
   return (
-    <div className="bg-card border border-border p-8 hover:border-primary/20 hover:shadow-lg transition-all text-left w-full rounded-lg group">
-      <div className="flex items-center justify-between mb-6">
-        <div className="bg-primary/10 p-3 rounded-lg">
-          <div className="text-primary group-hover:text-primary/80 transition-colors">
+    <div className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-left w-full rounded-2xl group">
+      <div className="flex items-center justify-between mb-4">
+        <div className="bg-teal-100 p-3 rounded-xl">
+          <div className="text-teal-700 group-hover:text-teal-900 transition-colors">
             {icon}
           </div>
         </div>
       </div>
-      <p className="text-xs font-light text-muted-foreground mb-3 uppercase tracking-wider">{title}</p>
+      <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">{title}</p>
       {loading ? (
-        <Skeleton className="h-10 w-32" />
+        <Skeleton className="h-8 w-24" />
       ) : (
-        <p className="text-4xl font-light text-card-foreground group-hover:text-primary/90 transition-colors">
+        <p className="text-3xl font-serif text-teal-900 group-hover:text-teal-700 transition-colors">
           {typeof value === 'number' ? value.toLocaleString('nb-NO') : value}
         </p>
       )}

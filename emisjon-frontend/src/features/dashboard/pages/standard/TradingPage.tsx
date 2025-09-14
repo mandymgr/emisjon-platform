@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
+import PageLayout from '@/components/layout/PageLayout';
 import { getAllShareholders } from '../services/shareholdersService';
 import {
   TrendingUp,
@@ -101,23 +102,33 @@ const TradingPage = () => {
 
   if (!hasAccess) {
     return (
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white border border-neutral-200 p-12 text-center">
-          <UserX className="h-16 w-16 text-neutral-300 mx-auto mb-6" />
-          <h2 className="text-2xl font-light text-neutral-900 mb-3">Trading Access Required</h2>
-          <p className="text-neutral-600 max-w-md mx-auto">
-            Level 1+ access required to use the trading platform. Contact your administrator for access.
-          </p>
+      <PageLayout
+        title="Tilgang nektet"
+        subtitle="Du har ikke tilstrekkelig tilgang til denne siden"
+      >
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-soft">
+            <UserX className="h-16 w-16 text-gray-300 mx-auto mb-6" />
+            <h2 className="text-2xl font-serif text-teal-900 mb-3">Handelstilgang påkrevd</h2>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Level 1+ tilgang kreves for å bruke handelsplattformen. Kontakt din administrator for tilgang.
+            </p>
+          </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-neutral-400" />
-      </div>
+      <PageLayout
+        title="Handelsplattform"
+        subtitle="Laster handelsdata..."
+      >
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-8 w-8 animate-spin text-teal-700" />
+        </div>
+      </PageLayout>
     );
   }
 
@@ -129,16 +140,15 @@ const TradingPage = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-12">
-        <h1 className="text-4xl font-light text-neutral-900 mb-3">
-          Trading Platform
-        </h1>
-        <p className="text-neutral-600">
-          Manage share transactions and market activity
-        </p>
-      </div>
+    <PageLayout
+      title="Handelsplattform"
+      subtitle="Handlé aksjer og se markedsaktivitet"
+      actions={
+        <div className="flex items-center space-x-4">
+          <Activity className="h-6 w-6 text-teal-700" />
+        </div>
+      }
+    >
 
       {/* Tab Navigation */}
       <div className="flex space-x-1 mb-12 border-b border-neutral-200">
@@ -306,7 +316,7 @@ const TradingPage = () => {
           </p>
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 };
 

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { FiX, FiUsers, FiCalendar } from 'react-icons/fi';
-import { Button } from '@/components/ui/button';
+import { FiUsers, FiCalendar } from 'react-icons/fi';
+import Modal from '@/components/ui/Modal';
 import { useNorwegianNumber } from '@/hooks/useNorwegianFormat';
+import type { ShareholderSnapshot } from '@/types/emission';
 import * as emissionsService from '@/features/dashboard/services/emissionsService';
-import type { ShareholderSnapshot } from '@/components/emission/types';
 
 interface SnapshotModalProps {
   isOpen: boolean;
@@ -45,7 +45,6 @@ export default function SnapshotModal({
   }, [isOpen, emissionId]);
 
 
-  if (!isOpen) return null;
 
   const getSnapshotTypeBadge = (type: string) => {
     const styles = {
@@ -65,28 +64,14 @@ export default function SnapshotModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="relative w-full max-w-5xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-border overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <div>
-            <h2 className="text-2xl font-bold text-card-foreground">
-              Shareholder Snapshots
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              {emissionTitle}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-muted-foreground hover:text-card-foreground transition-colors cursor-pointer"
-          >
-            <FiX size={24} />
-          </button>
-        </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Shareholder Snapshots"
+      subtitle={emissionTitle}
+      size="full"
+    >
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
           {loading ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground">Loading snapshots...</p>
@@ -180,18 +165,7 @@ export default function SnapshotModal({
               )}
             </div>
           )}
-        </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-border">
-          <Button
-            variant="outline"
-            onClick={onClose}
-          >
-            Close
-          </Button>
-        </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

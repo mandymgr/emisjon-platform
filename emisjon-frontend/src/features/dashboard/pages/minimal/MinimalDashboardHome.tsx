@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppSelector } from '@/store/hooks';
+import PageLayout from '@/components/layout/PageLayout';
 import {
   Users,
   Building2,
@@ -157,9 +158,14 @@ const MinimalDashboardHome = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-primary/60" />
-      </div>
+      <PageLayout
+        title="Dashboard"
+        subtitle="Laster dashboard-data..."
+      >
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-8 w-8 animate-spin text-teal-700" />
+        </div>
+      </PageLayout>
     );
   }
 
@@ -199,16 +205,10 @@ const MinimalDashboardHome = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header - Kinfolk inspired */}
-      <div className="mb-16">
-        <h1 className="text-5xl font-normal text-foreground mb-3">
-          Welcome back, {user?.name?.split(' ')[0]}
-        </h1>
-        <p className="text-lg font-light text-muted-foreground">
-          Here's an overview of your platform activity
-        </p>
-      </div>
+    <PageLayout
+      title="Dashboard"
+      subtitle={`Velkommen tilbake, ${user?.name?.split(' ')[0] || 'Bruker'}. Her er en oversikt over din plattformaktivitet.`}
+    >
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
@@ -217,15 +217,17 @@ const MinimalDashboardHome = () => {
 
           if (!stat.available) {
             return (
-              <div key={stat.title} className="bg-card border border-border p-8 cursor-not-allowed opacity-60 rounded-lg">
-                <div className="flex items-center justify-between mb-6">
-                  <Icon className="h-6 w-6 text-muted-foreground/50" />
-                  <div className="px-3 py-1 bg-muted text-xs font-light text-muted-foreground uppercase tracking-wider rounded-md">
-                    Level {stat.title === 'Active Emissions' ? '3' : '2'}+
+              <div key={stat.title} className="bg-white border border-gray-200 p-6 cursor-not-allowed opacity-60 rounded-2xl">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-gray-100 p-3 rounded-xl">
+                    <Icon className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <div className="px-3 py-1 bg-gray-100 text-xs font-light text-gray-500 uppercase tracking-wider rounded-md">
+                    Nivå {stat.title === 'Active Emissions' ? '3' : '2'}+
                   </div>
                 </div>
-                <p className="text-xs font-light text-muted-foreground/70 mb-3 uppercase tracking-wider">{stat.title}</p>
-                <p className="text-4xl font-light text-muted-foreground/50">—</p>
+                <p className="text-xs font-light text-gray-400 mb-2 uppercase tracking-wider">{stat.title}</p>
+                <p className="text-3xl font-serif text-gray-300">—</p>
               </div>
             );
           }
@@ -234,13 +236,15 @@ const MinimalDashboardHome = () => {
             <button
               key={stat.title}
               onClick={() => navigate(stat.path)}
-              className="bg-card border border-border p-8 hover:border-primary/20 hover:shadow-lg transition-all text-left w-full rounded-lg group"
+              className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-left w-full rounded-2xl group"
             >
-              <div className="flex items-center justify-between mb-6">
-                <Icon className="h-6 w-6 text-primary group-hover:text-primary/80" />
+              <div className="flex items-center justify-between mb-4">
+                <div className="bg-teal-100 p-3 rounded-xl">
+                  <Icon className="h-5 w-5 text-teal-700 group-hover:text-teal-900" />
+                </div>
                 {stat.change !== 0 && (
                   <div className={`flex items-center space-x-1 text-xs font-light ${
-                    stat.change > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                    stat.change > 0 ? 'text-green-600' : 'text-red-600'
                   }`}>
                     {stat.change > 0 ? (
                       <ArrowUpRight className="h-4 w-4" />
@@ -251,9 +255,9 @@ const MinimalDashboardHome = () => {
                   </div>
                 )}
               </div>
-              <p className="text-xs font-light text-muted-foreground mb-3 uppercase tracking-wider">{stat.title}</p>
-              <p className="text-4xl font-light text-card-foreground group-hover:text-primary/90 transition-colors">
-                {stat.value.toLocaleString()}
+              <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">{stat.title}</p>
+              <p className="text-3xl font-serif text-teal-900 group-hover:text-teal-700 transition-colors">
+                {stat.value.toLocaleString('nb-NO')}
               </p>
             </button>
           );
@@ -263,8 +267,8 @@ const MinimalDashboardHome = () => {
       {/* Shareholder Distribution */}
       {user && user.level >= 2 && chartData.length > 0 && (
         <div className="mb-16">
-          <h2 className="text-3xl font-normal text-foreground mb-8">Share Distribution</h2>
-          <div className="bg-card border border-border p-8 rounded-lg">
+          <h2 className="font-serif text-3xl text-teal-900 mb-8">Aksjefordeling</h2>
+          <div className="bg-white border border-gray-200 p-8 rounded-2xl">
 
             {/* Simple Elegant Bars */}
             <div className="space-y-6 mb-8">
@@ -340,7 +344,7 @@ const MinimalDashboardHome = () => {
       {user && user.level >= 3 && (
         <div className="mb-16">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-normal text-foreground">Active Emissions</h2>
+            <h2 className="font-serif text-3xl text-teal-900">Aktive emisjoner</h2>
             <button
               onClick={() => navigate('/minimal-dashboard/emissions')}
               className="text-sm font-light text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider flex items-center space-x-1"
@@ -417,14 +421,14 @@ const MinimalDashboardHome = () => {
 
       {/* Quick Actions */}
       <div className="mb-16">
-        <h2 className="text-3xl font-normal text-foreground mb-8">Quick Actions</h2>
+        <h2 className="font-serif text-3xl text-teal-900 mb-8">Hurtighandlinger</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {user && user.level >= 2 && (
             <button
               onClick={() => navigate('/minimal-dashboard/shareholders')}
-              className="bg-card border border-border p-6 hover:border-primary/20 hover:shadow-lg transition-all text-center rounded-lg group"
+              className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-center rounded-2xl group"
             >
-              <Plus className="h-8 w-8 text-primary group-hover:text-primary/80 mx-auto mb-3" />
+              <Plus className="h-8 w-8 text-teal-700 group-hover:text-teal-900 mx-auto mb-3" />
               <p className="text-sm font-light text-card-foreground mb-1">Add Shareholder</p>
               <p className="text-xs font-light text-muted-foreground">Manage ownership</p>
             </button>
@@ -433,22 +437,22 @@ const MinimalDashboardHome = () => {
           {user && user.level >= 3 && (
             <button
               onClick={() => navigate('/minimal-dashboard/emissions')}
-              className="bg-card border border-border p-6 hover:border-primary/20 hover:shadow-lg transition-all text-center rounded-lg group"
+              className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-center rounded-2xl group"
             >
-              <Send className="h-8 w-8 text-primary group-hover:text-primary/80 mx-auto mb-3" />
+              <Send className="h-8 w-8 text-teal-700 group-hover:text-teal-900 mx-auto mb-3" />
               <p className="text-sm font-light text-card-foreground mb-1">Create Emission</p>
               <p className="text-xs font-light text-muted-foreground">New investment round</p>
             </button>
           )}
 
-          <button className="bg-card border border-border p-6 hover:border-primary/20 hover:shadow-lg transition-all text-center rounded-lg group">
-            <FileText className="h-8 w-8 text-primary group-hover:text-primary/80 mx-auto mb-3" />
+          <button className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-center rounded-2xl group">
+            <FileText className="h-8 w-8 text-teal-700 group-hover:text-teal-900 mx-auto mb-3" />
             <p className="text-sm font-light text-card-foreground mb-1">Generate Report</p>
             <p className="text-xs font-light text-muted-foreground">Export data</p>
           </button>
 
-          <button className="bg-card border border-border p-6 hover:border-primary/20 hover:shadow-lg transition-all text-center rounded-lg group">
-            <Bell className="h-8 w-8 text-primary group-hover:text-primary/80 mx-auto mb-3" />
+          <button className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-center rounded-2xl group">
+            <Bell className="h-8 w-8 text-teal-700 group-hover:text-teal-900 mx-auto mb-3" />
             <p className="text-sm font-light text-card-foreground mb-1">Notifications</p>
             <p className="text-xs font-light text-muted-foreground">Stay updated</p>
           </button>
@@ -557,7 +561,7 @@ const MinimalDashboardHome = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

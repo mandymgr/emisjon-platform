@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AccessRestrictedCard } from '@/components/dashboard';
 import { ErrorAlert } from '@/components/ui/error-alert';
 import { useErrorAlert } from '@/hooks/useErrorAlert';
+import PageLayout from '@/components/layout/PageLayout';
 import ShareholderSearchBar from '@/components/shareholder/ShareholderSearchBar';
 import ShareholderTableWithSort from '@/components/shareholder/ShareholderTableWithSort';
 import AddShareholderModal from '@/components/shareholder/AddShareholderModal';
@@ -164,30 +166,25 @@ export default function ShareholdersPage() {
   // Access denied for non-authorized users
   if (!canView) {
     return (
-      <div>
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-foreground">Shareholders Management</h2>
-        </div>
-        <AccessRestrictedCard 
+      <PageLayout
+        title="Aksjonæradministrasjon"
+        subtitle="Du trenger Nivå 2+ tilgang for å se aksjonærinformasjon"
+      >
+        <AccessRestrictedCard
           requiredLevel={2}
-          message="Shareholders information requires Level 2+ access."
+          message="Aksjonærinformasjon krever Nivå 2+ tilgang."
         />
-      </div>
+      </PageLayout>
     );
   }
 
   // Loading state
   if (loading) {
     return (
-      <div>
-        {/* Page header skeleton */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-4 w-32" />
-          </div>
-        </div>
-
+      <PageLayout
+        title="Aksjonæradministrasjon"
+        subtitle="Laster aksjonærer..."
+      >
         {/* Search bar skeleton */}
         <div className="mb-6 flex gap-4">
           <Skeleton className="h-10 flex-1" />
@@ -195,10 +192,10 @@ export default function ShareholdersPage() {
         </div>
 
         {/* Table skeleton */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-soft">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-900">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3">
                     <Skeleton className="h-4 w-20" />
@@ -222,7 +219,7 @@ export default function ShareholdersPage() {
                   )}
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="bg-white divide-y divide-gray-200">
                 {[...Array(8)].map((_, index) => (
                   <tr key={index}>
                     <td className="px-6 py-4">
@@ -254,43 +251,48 @@ export default function ShareholdersPage() {
             </table>
           </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <p className="text-red-600 dark:text-red-400">{error}</p>
-        <button 
-          onClick={loadShareholders} 
-          className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary/80"
-        >
-          Retry
-        </button>
-      </div>
+      <PageLayout
+        title="Aksjonæradministrasjon"
+        subtitle="Det oppstod en feil ved lasting av aksjonærer"
+      >
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-soft p-6">
+          <p className="text-red-600">{error}</p>
+          <Button onClick={loadShareholders} className="mt-4">Prøv igjen</Button>
+        </div>
+      </PageLayout>
     );
   }
 
-  return (
-    <div>
-      {/* Page header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Shareholders Management</h2>
-          <span className="text-sm text-gray-600 dark:text-gray-400">
-            Total Shareholders: {shareholders.length}
-          </span>
-        </div>
-      </div>
+  const actions = isAdmin ? (
+    <Button
+      onClick={() => setShowAddModal(true)}
+      className="bg-teal-700 hover:bg-teal-900 text-white"
+    >
+      Ny aksjonær
+    </Button>
+  ) : undefined;
 
+  return (
+    <PageLayout
+      title="Aksjonæradministrasjon"
+      subtitle={`Administrer aksjonærer (${shareholders.length} aksjonærer)`}
+      actions={actions}
+    >
       {/* Search bar */}
-      <ShareholderSearchBar
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        onAddClick={() => isAdmin && setShowAddModal(true)}
-      />
+      <div className="mb-6">
+        <ShareholderSearchBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onAddClick={() => isAdmin && setShowAddModal(true)}
+        />
+      </div>
 
       {/* Shareholders table */}
       <ShareholderTableWithSort
@@ -339,6 +341,6 @@ export default function ShareholdersPage() {
         title={alertError.title}
         message={alertError.message}
       />
-    </div>
+    </PageLayout>
   );
 }

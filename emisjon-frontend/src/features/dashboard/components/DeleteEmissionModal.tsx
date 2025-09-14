@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FiAlertTriangle } from 'react-icons/fi';
 import * as emissionsService from '../services/emissionsService';
-import type { Emission } from '@/components/emission/types';
+import type { Emission } from '@/types/emission';
 
 interface DeleteEmissionModalProps {
   emission: Emission;

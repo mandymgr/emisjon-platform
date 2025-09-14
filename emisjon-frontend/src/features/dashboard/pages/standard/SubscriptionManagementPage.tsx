@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { Skeleton } from '@/components/ui/skeleton';
+import PageLayout from '@/components/layout/PageLayout';
 import * as subscriptionService from '@/services/subscriptionService';
 import type { Subscription } from '@/types/subscription';
 import SubscriptionFilters from '@/components/subscriptionManagement/SubscriptionFilters';
@@ -97,23 +98,27 @@ export default function SubscriptionManagementPage() {
 
   if (!isAdminLevel2) {
     return (
-      <div className="bg-card rounded-lg shadow-md border border-border p-6">
-        <h2 className="text-xl font-bold text-card-foreground">Access Denied</h2>
-        <p className="text-muted-foreground mt-2">
-          You need Admin Level 2 access to manage subscriptions.
-        </p>
-      </div>
+      <PageLayout
+        title="Tegningsadministrasjon"
+        subtitle="Tilgang nektet"
+      >
+        <div className="bg-white rounded-2xl shadow-soft border border-gray-200 p-6">
+          <h2 className="text-xl font-serif text-teal-900">Tilgang nektet</h2>
+          <p className="text-gray-600 mt-2">
+            Du trenger Admin Nivå 2 tilgang for å administrere tegninger.
+          </p>
+        </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-foreground">Subscription Management</h2>
-      </div>
-
+    <PageLayout
+      title="Tegningsadministrasjon"
+      subtitle={`Administrer emisjonstegninger (${subscriptions.length} tegninger)`}
+    >
       {error && (
-        <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
           {error}
         </div>
       )}
@@ -167,6 +172,6 @@ export default function SubscriptionManagementPage() {
         }}
         onApprove={confirmApprove}
       />
-    </div>
+    </PageLayout>
   );
 }

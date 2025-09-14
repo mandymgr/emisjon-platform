@@ -1,17 +1,14 @@
 import { useState } from 'react';
-import { FiX, FiHash } from 'react-icons/fi';
+import { FiHash } from 'react-icons/fi';
+import Modal from '@/components/ui/Modal';
 import { Button } from '@/components/ui/button';
 import { useNorwegianNumber } from '@/hooks/useNorwegianFormat';
+import type { EmissionForSubscription } from '@/types/emission';
 import * as subscriptionService from '@/services/subscriptionService';
 
 interface SubscribeModalProps {
   isOpen: boolean;
-  emission: {
-    id: string;
-    title: string;
-    pricePerShare: number;
-    newSharesOffered: number;
-  };
+  emission: EmissionForSubscription;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -27,12 +24,10 @@ export default function SubscribeModal({
   const [error, setError] = useState('');
   const { formatCurrency } = useNorwegianNumber();
 
-  if (!isOpen) return null;
 
   const totalAmount = Number(sharesRequested) * emission.pricePerShare;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     
     const shares = Number(sharesRequested);
     if (!shares || shares <= 0) {
@@ -61,20 +56,32 @@ export default function SubscribeModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="relative w-full max-w-md bg-card rounded-lg shadow-xl border border-border p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-card-foreground">
-            Subscribe to Emission
-          </h2>
-          <button
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Subscribe to Emission"
+      size="sm"
+      actions={
+        <div className="flex gap-3 w-full">
+          <Button
+            type="button"
+            variant="outline"
             onClick={onClose}
-            className="text-muted-foreground hover:text-card-foreground transition-colors"
+            disabled={loading}
+            className="flex-1"
           >
-            <FiX size={24} />
-          </button>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={loading || !sharesRequested || Number(sharesRequested) > emission.newSharesOffered || Number(sharesRequested) <= 0}
+            className="flex-1"
+          >
+            {loading ? 'Subscribing...' : 'Subscribe'}
+          </Button>
         </div>
+      }
+    >
 
         {/* Emission Info */}
         <div className="bg-muted/50 rounded-lg p-4 mb-6">
@@ -103,7 +110,7 @@ export default function SubscribeModal({
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-card-foreground mb-1">
               Number of Shares to Request
@@ -160,32 +167,12 @@ export default function SubscribeModal({
             </div>
           )}
 
-          {/* Actions */}
-          <div className="flex gap-3 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={loading}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={loading || !sharesRequested || Number(sharesRequested) > emission.newSharesOffered || Number(sharesRequested) <= 0}
-              className="flex-1"
-            >
-              {loading ? 'Subscribing...' : 'Subscribe'}
-            </Button>
-          </div>
-        </form>
+        </div>
 
         {/* Notice */}
         <p className="text-xs text-muted-foreground mt-4 text-center">
           Your subscription request will be reviewed by an administrator
         </p>
-      </div>
-    </div>
+    </Modal>
   );
 }

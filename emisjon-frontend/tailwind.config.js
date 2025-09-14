@@ -31,6 +31,15 @@ export default {
         'obl-text-muted': 'rgba(14, 26, 28, 0.7)',
         'obl-text-subtle': 'rgba(14, 26, 28, 0.6)',
 
+        // Kinfolk-style teal palette
+        teal: {
+          900: '#124F62',
+          700: '#1C6A7E',
+          600: '#207589',
+          500: '#278899',
+          100: '#E6F2F4'
+        },
+
         // Semantic color system
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -73,8 +82,8 @@ export default {
       },
       fontFamily: {
         // Oblinor Typography
-        serif: ['"EB Garamond"', ...fontFamily.serif],
-        sans: ["Inter", ...fontFamily.sans],
+        serif: ['"EB Garamond"', '"Cormorant Garamond"', ...fontFamily.serif],
+        sans: ["Inter", "system-ui", ...fontFamily.sans],
         mono: [...fontFamily.mono],
       },
       fontSize: {
@@ -131,7 +140,7 @@ export default {
       },
       boxShadow: {
         // Scandinavian subtle shadows
-        'soft': '0 2px 8px rgba(18, 79, 98, 0.08)',
+        'soft': '0 6px 20px rgba(18,79,98,0.06)',
         'soft-lg': '0 4px 16px rgba(18, 79, 98, 0.12)',
         'professional': '0 1px 3px rgba(18, 79, 98, 0.1), 0 1px 2px rgba(18, 79, 98, 0.06)',
       },

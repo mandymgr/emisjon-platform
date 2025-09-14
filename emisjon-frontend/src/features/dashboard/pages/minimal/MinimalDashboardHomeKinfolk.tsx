@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { FiActivity } from 'react-icons/fi';
 import { useAppSelector } from '@/store/hooks';
+import PageLayout from '@/components/layout/PageLayout';
 import { usePortfolio } from "../hooks/usePortfolio";
 import { useProjects } from "../hooks/useProjects";
 import { useDocuments } from "../hooks/useDocuments";
 import type { Project, DocumentRow } from "../hooks/types";
 import type { Shareholder } from '@/components/shareholder/types';
-import type { Emission } from '@/components/emission/types';
+import type { Emission } from '@/types/emission';
 import * as shareholdersService from '../services/shareholdersService';
 import * as usersService from '../services/usersService';
 import * as emissionsService from '../services/emissionsService';

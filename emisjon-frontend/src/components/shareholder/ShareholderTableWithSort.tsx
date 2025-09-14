@@ -64,61 +64,61 @@ function ShareholderTableWithSort({
     if (sortField !== field) {
       return <ArrowUpDown className="ml-2 h-4 w-4 text-gray-400" />;
     }
-    return sortDirection === 'asc' 
-      ? <ArrowUp className="ml-2 h-4 w-4 text-gray-600 dark:text-gray-300" />
-      : <ArrowDown className="ml-2 h-4 w-4 text-gray-600 dark:text-gray-300" />;
+    return sortDirection === 'asc'
+      ? <ArrowUp className="ml-2 h-4 w-4 text-gray-600" />
+      : <ArrowDown className="ml-2 h-4 w-4 text-gray-600" />;
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-soft overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full">
-          <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+          <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="px-6 py-3 text-left whitespace-nowrap">
                 <button
                   onClick={() => handleSort('name')}
-                  className="flex items-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
+                  className="flex items-center text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors cursor-pointer"
                 >
-                  Name
+                  Navn
                   <SortIcon field="name" />
                 </button>
               </th>
               <th className="px-6 py-3 text-left whitespace-nowrap">
                 <button
                   onClick={() => handleSort('email')}
-                  className="flex items-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
+                  className="flex items-center text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors cursor-pointer"
                 >
-                  Email
+                  E-post
                   <SortIcon field="email" />
                 </button>
               </th>
               <th className="px-6 py-3 text-left whitespace-nowrap">
                 <button
                   onClick={() => handleSort('shares')}
-                  className="flex items-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
+                  className="flex items-center text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors cursor-pointer"
                 >
-                  Shares
+                  Aksjer
                   <SortIcon field="shares" />
                 </button>
               </th>
               <th className="px-6 py-3 text-left whitespace-nowrap">
                 <button
                   onClick={() => handleSort('percentage')}
-                  className="flex items-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
+                  className="flex items-center text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors cursor-pointer"
                 >
-                  Percentage
+                  Prosent
                   <SortIcon field="percentage" />
                 </button>
               </th>
               {isAdmin && (
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
-                  Actions
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                  Handlinger
                 </th>
               )}
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white divide-y divide-gray-200">
             {sortedShareholders.map((shareholder) => (
               <ShareholderTableRow
                 key={shareholder.id}

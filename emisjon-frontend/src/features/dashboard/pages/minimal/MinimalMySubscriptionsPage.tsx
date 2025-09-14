@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { getMySubscriptions } from '@/services/subscriptionService';
+import PageLayout from '@/components/layout/PageLayout';
 import {
   CreditCard,
   Calendar,
@@ -96,9 +97,14 @@ const MinimalMySubscriptionsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-neutral-400" />
-      </div>
+      <PageLayout
+        title="Mine tegninger"
+        subtitle="Laster tegninger..."
+      >
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-8 w-8 animate-spin text-teal-700" />
+        </div>
+      </PageLayout>
     );
   }
 
@@ -123,8 +129,11 @@ const MinimalMySubscriptionsPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header */}
+    <PageLayout
+      title="Mine tegninger"
+      subtitle={`Oversikt over alle dine investeringstegninger (${subscriptions.length} tegninger)`}
+    >
+      {/* Stats Overview */}
       <div className="mb-12">
         <h1 className="text-4xl font-light text-neutral-900 mb-3">
           My Subscriptions
@@ -282,7 +291,7 @@ const MinimalMySubscriptionsPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

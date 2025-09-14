@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import type { Emission } from '@/components/emission/types';
+import type { Emission } from '@/types/emission';
 import { Progress } from '@/components/ui/progress';
 
 interface ActiveEmissionCardProps {
