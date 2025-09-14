@@ -136,33 +136,37 @@ const MinimalDashboardLayout = () => {
           role="navigation"
           aria-label="Main navigation"
         >
-          {/* Scandinavian Brand */}
-          <div className="flex h-24 items-center justify-center border-b border-sidebar-border relative py-6">
-            <img
-              src="/logo.png"
-              alt="Logo"
-              className="h-12 w-12"
-            />
-
-            {/* Mobile close button */}
-            <button
-              onClick={toggleSidebar}
-              className="lg:hidden absolute right-4 p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
-              aria-label="Close menu"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            {/* Desktop collapse toggle */}
+          {/* Desktop collapse toggle */}
+          <div className="relative border-b border-sidebar-border">
             <button
               onClick={toggleSidebarCollapse}
-              className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 items-center justify-center bg-white dark:bg-white/10 border border-[#E6E6E0] dark:border-white/15 rounded-full hover:bg-primary/10 dark:hover:bg-white/20 transition-colors"
+              className="hidden lg:flex absolute -right-3 top-4 w-6 h-6 items-center justify-center bg-white dark:bg-white/10 border border-[#E6E6E0] dark:border-white/15 rounded-full hover:bg-primary/10 dark:hover:bg-white/20 transition-colors"
               aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               <ChevronLeft
                 className={`h-4 w-4 transition-transform duration-200 ${isSidebarCollapsed ? 'rotate-180' : ''}`}
               />
             </button>
+
+            {/* Mobile close button in header area */}
+            <div className="lg:hidden flex justify-end p-4">
+              <button
+                onClick={toggleSidebar}
+                className="p-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Logo positioned lower to align with main content */}
+            <div className="flex justify-center pb-10 pt-10">
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-16 w-16"
+              />
+            </div>
           </div>
 
           {/* User info */}
@@ -366,7 +370,7 @@ const MinimalDashboardLayout = () => {
             </button>
           </div>
 
-          <main className="py-8 px-4 sm:px-6 lg:px-8">
+          <main className="pt-4 pb-8 px-4 sm:px-6 lg:px-8">
             <Outlet />
           </main>
         </div>
