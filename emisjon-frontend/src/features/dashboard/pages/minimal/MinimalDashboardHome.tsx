@@ -2,19 +2,19 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppSelector } from '@/store/hooks';
 import PageLayout from '@/components/layout/PageLayout';
+import StatsCard from '@/components/dashboard/StatsCard';
+import { LoadingGrid } from '@/components/ui/LoadingGrid';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ResultsContainer } from '@/components/ui/ResultsContainer';
 import {
   Users,
   Building2,
   TrendingUp,
   Activity,
-  ArrowUpRight,
-  ArrowDownRight,
-  Loader2,
   ExternalLink,
   FileText,
   Clock,
-  Plus,
-  Send,
   Bell
 } from 'lucide-react';
 import { getAllUsers } from '../services/usersService';
@@ -45,6 +45,7 @@ const MinimalDashboardHome = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [topShareholders, setTopShareholders] = useState<any[]>([]);
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [activeEmissions, setActiveEmissions] = useState<any[]>([]);
@@ -148,6 +149,7 @@ const MinimalDashboardHome = () => {
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -160,11 +162,21 @@ const MinimalDashboardHome = () => {
     return (
       <PageLayout
         title="Dashboard"
-        subtitle="Laster dashboard-data..."
+        subtitle="Loading dashboard data..."
       >
-        <div className="flex items-center justify-center h-96">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
-        </div>
+        <LoadingGrid count={4} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16" />
+        <LoadingGrid count={3} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" />
+      </PageLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageLayout
+        title="Dashboard"
+        subtitle="Error loading dashboard"
+      >
+        <ErrorMessage message={error} />
       </PageLayout>
     );
   }
@@ -207,7 +219,7 @@ const MinimalDashboardHome = () => {
   return (
     <PageLayout
       title="Dashboard"
-      subtitle={`Velkommen tilbake, ${user?.name?.split(' ')[0] || 'Bruker'}. Her er en oversikt over din plattformaktivitet.`}
+      subtitle={`Welcome back, ${user?.name?.split(' ')[0] || 'User'}. Here's an overview of your platform activity.`}
     >
 
       {/* Stats Grid */}
@@ -350,7 +362,7 @@ const MinimalDashboardHome = () => {
       {user && user.level >= 3 && (
         <div className="mb-16">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="font-serif text-3xl text-teal-900">Aktive emisjoner</h2>
+            <h2 className="font-serif text-3xl text-teal-900">Active Emissions</h2>
             <button
               onClick={() => navigate('/minimal-dashboard/emissions')}
               className="text-sm font-light text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider flex items-center space-x-1"
@@ -427,7 +439,7 @@ const MinimalDashboardHome = () => {
 
       {/* Quick Actions */}
       <div className="mb-16">
-        <h2 className="font-serif text-3xl text-teal-900 mb-8">Hurtighandlinger</h2>
+        <h2 className="font-serif text-3xl text-teal-900 mb-8">Quick Actions</h2>
         <div className={`grid gap-6 ${user && user.level >= 3 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 lg:grid-cols-3'}`}>
           {user && user.level >= 2 && (
             <button

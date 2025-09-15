@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { getAllUsers } from '../services/usersService';
 import PageLayout from '@/components/layout/PageLayout';
+import StatsCard from '@/components/dashboard/StatsCard';
+import { LoadingGrid } from '@/components/ui/LoadingGrid';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ResultsContainer } from '@/components/ui/ResultsContainer';
+import { useSearchWithDebounce } from '@/hooks/useSearchWithDebounce';
 import {
   Search,
   Plus,
@@ -32,7 +38,8 @@ const MinimalUsersPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const { searchTerm, debouncedSearchTerm, updateSearchTerm } = useSearchWithDebounce();
   const [roleFilter, setRoleFilter] = useState<'ALL' | 'ADMIN' | 'USER'>('ALL');
   const [levelFilter, setLevelFilter] = useState<'ALL' | '1' | '2' | '3'>('ALL');
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
@@ -57,6 +64,7 @@ const MinimalUsersPage = () => {
         setFilteredUsers(pageUsers);
       } catch (error) {
         console.error('Error fetching users:', error);
+        setError('Failed to load users. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -67,8 +75,8 @@ const MinimalUsersPage = () => {
 
   useEffect(() => {
     let filtered = users.filter(user =>
-      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      user.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     );
 
     if (roleFilter !== 'ALL') {
@@ -80,7 +88,7 @@ const MinimalUsersPage = () => {
     }
 
     setFilteredUsers(filtered);
-  }, [users, searchTerm, roleFilter, levelFilter]);
+  }, [users, debouncedSearchTerm, roleFilter, levelFilter]);
 
   const toggleUserSelection = (userId: string) => {
     const newSelection = new Set(selectedUsers);
@@ -204,7 +212,7 @@ const MinimalUsersPage = () => {
               type="text"
               placeholder="Search users..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => updateSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-teal-900"
             />
           </div>

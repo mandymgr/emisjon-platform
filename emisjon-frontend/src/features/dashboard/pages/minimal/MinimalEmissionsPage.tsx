@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import * as emissionsService from '../../services/emissionsService';
 import PageLayout from '@/components/layout/PageLayout';
+import StatsCard from '@/components/dashboard/StatsCard';
+import { LoadingGrid } from '@/components/ui/LoadingGrid';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ResultsContainer } from '@/components/ui/ResultsContainer';
 import type { Emission } from '@/types/emission';
 import AddEmissionModal from '../../components/AddEmissionModal';
 import EditEmissionModal from '../../components/EditEmissionModal';
@@ -125,9 +130,19 @@ const MinimalEmissionsPage = () => {
         title="Emissions"
         subtitle="Loading emissions..."
       >
-        <div className="flex items-center justify-center h-96">
-          <Loader2 className="h-8 w-8 animate-spin text-teal-700" />
-        </div>
+        <LoadingGrid count={4} className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" />
+        <LoadingGrid count={6} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" />
+      </PageLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageLayout
+        title="Emissions"
+        subtitle="Error loading emissions"
+      >
+        <ErrorMessage message={error} />
       </PageLayout>
     );
   }
@@ -168,55 +183,32 @@ const MinimalEmissionsPage = () => {
       actions={actions}
     >
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 relative">
-              <Activity className="h-5 w-5 text-gray-600" />
-            </div>
-          </div>
-          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Emissions</p>
-          <p className="text-3xl font-serif text-teal-900">
-            {stats?.totalEmissions || 0}
-          </p>
-        </div>
-
-        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 relative">
-              <TrendingUp className="h-5 w-5 text-gray-600" />
-            </div>
-          </div>
-          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Active</p>
-          <p className="text-3xl font-serif text-teal-900">
-            {stats?.activeEmissions || 0}
-          </p>
-        </div>
-
-        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 relative">
-              <DollarSign className="h-5 w-5 text-gray-600" />
-            </div>
-          </div>
-          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Value</p>
-          <p className="text-3xl font-serif text-teal-900">
-            {formatCurrency(stats?.totalValue || 0)}
-          </p>
-        </div>
-
-        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 relative">
-              <Users className="h-5 w-5 text-gray-600" />
-            </div>
-          </div>
-          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Subscriptions</p>
-          <p className="text-3xl font-serif text-teal-900">
-            {stats?.totalSubscriptions || 0}
-          </p>
-        </div>
-      </div>
+      <ResultsContainer className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <StatsCard
+          title="Total Emissions"
+          value={stats?.totalEmissions || 0}
+          icon={<Activity className="h-5 w-5" />}
+          loading={loading}
+        />
+        <StatsCard
+          title="Active"
+          value={stats?.activeEmissions || 0}
+          icon={<TrendingUp className="h-5 w-5" />}
+          loading={loading}
+        />
+        <StatsCard
+          title="Total Value"
+          value={formatCurrency(stats?.totalValue || 0)}
+          icon={<DollarSign className="h-5 w-5" />}
+          loading={loading}
+        />
+        <StatsCard
+          title="Subscriptions"
+          value={stats?.totalSubscriptions || 0}
+          icon={<Users className="h-5 w-5" />}
+          loading={loading}
+        />
+      </ResultsContainer>
 
       {/* Emissions Table */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-soft overflow-hidden">
@@ -349,18 +341,19 @@ const MinimalEmissionsPage = () => {
             </table>
           </div>
         ) : (
-          <div className="text-center py-16">
-            <Activity className="h-16 w-16 text-gray-300 mx-auto mb-6" />
-            <h3 className="text-xl font-serif text-teal-900 mb-3">No emissions yet</h3>
-            <p className="text-gray-600 mb-6">
-              Create your first share emission to start capital raising
-            </p>
-            {isAdmin && (
-              <button className="px-6 py-3 bg-sidebar-primary text-white text-sm hover:bg-sidebar-primary/90 transition-colors rounded-xl">
+          <EmptyState
+            title="No emissions yet"
+            description="Create your first share emission to start capital raising"
+            icon={<Activity className="h-16 w-16" />}
+            action={isAdmin ? (
+              <button
+                onClick={() => setShowAdd(true)}
+                className="px-6 py-3 bg-teal-900 text-white text-sm hover:bg-teal-800 transition-colors rounded-xl"
+              >
                 Create Emission
               </button>
-            )}
-          </div>
+            ) : undefined}
+          />
         )}
       </div>
 
