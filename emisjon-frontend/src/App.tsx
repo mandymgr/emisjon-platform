@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import '@/styles/landing.css';
 
 // Lazy load pages for code splitting
 const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
@@ -31,6 +32,7 @@ const MinimalLoginPage = lazy(() => import('@/features/auth/pages/MinimalLoginPa
 const MinimalRegisterPage = lazy(() => import('@/features/auth/pages/MinimalRegisterPage'));
 const MinimalDashboardLayout = lazy(() => import('@/features/dashboard/components/MinimalDashboardLayout'));
 const DesignShowcase = lazy(() => import('./DesignShowcase'));
+const HeroLandingPage = lazy(() => import('@/pages/HeroLandingPage'));
 
 export default function App() {
   return (
@@ -38,7 +40,8 @@ export default function App() {
       <Suspense fallback={null}>
         <Routes>
           {/* Public routes */}
-          <Route path="/" element={<Navigate to="/minimal-login" replace />} />
+          <Route path="/" element={<HeroLandingPage />} />
+          <Route path="/landing" element={<HeroLandingPage />} />
           <Route path="/login" element={<MinimalLoginPage />} />
           <Route path="/register" element={<MinimalRegisterPage />} />
           <Route path="/design" element={<DesignShowcase />} />
