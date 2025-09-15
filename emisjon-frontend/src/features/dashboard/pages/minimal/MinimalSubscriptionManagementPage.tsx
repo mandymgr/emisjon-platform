@@ -127,15 +127,15 @@ const MinimalSubscriptionManagementPage = () => {
   if (!hasAccess) {
     return (
       <PageLayout
-        title="Tilgang nektet"
-        subtitle="Du har ikke tilstrekkelig tilgang til denne siden"
+        title="Access Denied"
+        subtitle="You do not have sufficient access to this page"
       >
         <div className="max-w-2xl mx-auto text-center">
           <div className="bg-white border border-gray-200 p-12 rounded-2xl shadow-soft">
             <UserX className="h-16 w-16 text-sidebar-foreground/30 mx-auto mb-6" />
-            <h2 className="text-xl font-serif text-teal-900 mb-2">Admin Level 2+ påkrevd</h2>
+            <h2 className="text-xl font-serif text-teal-900 mb-2">Admin Level 2+ Required</h2>
             <p className="text-gray-600 max-w-md mx-auto">
-              Abonnementsstyring krever administratorrettigheter med Level 2+ tilgang. Kontakt din administrator for tilgang.
+              Subscription management requires administrator rights with Level 2+ access. Contact your administrator for access.
             </p>
           </div>
         </div>
@@ -146,8 +146,8 @@ const MinimalSubscriptionManagementPage = () => {
   if (loading) {
     return (
       <PageLayout
-        title="Laster..."
-        subtitle="Henter abonnementsdata"
+        title="Loading..."
+        subtitle="Fetching subscription data"
       >
         <div className="flex items-center justify-center h-96">
           <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
@@ -176,8 +176,8 @@ const MinimalSubscriptionManagementPage = () => {
 
   return (
     <PageLayout
-      title="Abonnementsstyring"
-      subtitle="Se og administrer alle abonnementsforespørsler"
+      title="Subscription Management"
+      subtitle="View and manage all subscription requests"
       actions={
         <div className="flex items-center space-x-4">
           <Shield className="h-6 w-6 text-gray-600" />
@@ -246,7 +246,7 @@ const MinimalSubscriptionManagementPage = () => {
               placeholder="Search subscriptions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-gray-900"
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-teal-900"
             />
           </div>
 
@@ -255,7 +255,7 @@ const MinimalSubscriptionManagementPage = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED')}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-gray-900 min-w-[120px]"
+              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-teal-900 min-w-[120px]"
             >
               <option value="ALL">All Status</option>
               <option value="PENDING">Pending</option>
@@ -286,7 +286,7 @@ const MinimalSubscriptionManagementPage = () => {
                   <div className="p-6 border-b border-neutral-100">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        <h3 className="text-lg font-medium text-neutral-900 mb-1">
+                        <h3 className="text-lg font-medium text-teal-900 mb-1">
                           {subscription.emissionTitle}
                         </h3>
                         <p className="text-sm text-gray-600 mb-2">
@@ -310,19 +310,19 @@ const MinimalSubscriptionManagementPage = () => {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <p className="text-gray-600">Shares Requested</p>
-                        <p className="font-medium text-neutral-900">
+                        <p className="font-medium text-teal-900">
                           {subscription.sharesRequested.toLocaleString()}
                         </p>
                       </div>
                       <div>
                         <p className="text-gray-600">Price per Share</p>
-                        <p className="font-medium text-neutral-900">
+                        <p className="font-medium text-teal-900">
                           ${subscription.pricePerShare.toFixed(2)}
                         </p>
                       </div>
                       <div className="col-span-2">
                         <p className="text-gray-600">Total Value</p>
-                        <p className="font-medium text-neutral-900 text-lg">
+                        <p className="font-medium text-teal-900 text-lg">
                           ${subscription.totalValue.toLocaleString()}
                         </p>
                       </div>
@@ -374,7 +374,7 @@ const MinimalSubscriptionManagementPage = () => {
           ) : (
             <div className="text-center py-16">
               <Shield className="h-16 w-16 text-sidebar-foreground/30 mx-auto mb-6" />
-              <h3 className="text-xl font-light text-neutral-900 mb-3">No Subscriptions Found</h3>
+              <h3 className="text-xl font-light text-teal-900 mb-3">No Subscriptions Found</h3>
               <p className="text-gray-600 mb-6">
                 {searchTerm || statusFilter !== 'ALL'
                   ? 'Try adjusting your search or filter criteria'

@@ -98,8 +98,8 @@ const MinimalMySubscriptionsPage = () => {
   if (loading) {
     return (
       <PageLayout
-        title="Mine tegninger"
-        subtitle="Laster tegninger..."
+        title="My Subscriptions"
+        subtitle="Loading subscriptions..."
       >
         <div className="flex items-center justify-center h-96">
           <Loader2 className="h-8 w-8 animate-spin text-teal-700" />
@@ -130,8 +130,8 @@ const MinimalMySubscriptionsPage = () => {
 
   return (
     <PageLayout
-      title="Mine tegninger"
-      subtitle={`Oversikt over alle dine investeringstegninger (${subscriptions.length} tegninger)`}
+      title="My Subscriptions"
+      subtitle={`Overview of all your investment subscriptions (${subscriptions.length} subscriptions)`}
     >
       {/* Stats Overview */}
       <div className="mb-12">

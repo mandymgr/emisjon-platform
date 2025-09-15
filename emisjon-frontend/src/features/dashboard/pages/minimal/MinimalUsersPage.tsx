@@ -103,14 +103,14 @@ const MinimalUsersPage = () => {
   if (!hasAccess) {
     return (
       <PageLayout
-        title="Brukere"
-        subtitle="Tilgang nektet"
+        title="Users"
+        subtitle="Access Denied"
       >
         <div className="bg-white border border-gray-200 p-12 text-center rounded-2xl shadow-soft">
           <UserX className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl font-serif text-teal-900 mb-2">Tilgang begrenset</h2>
+          <h2 className="text-xl font-serif text-teal-900 mb-2">Access Restricted</h2>
           <p className="text-gray-600">
-            Admin Nivå 2+ tilgang kreves for å administrere brukere
+            Admin Level 2+ access required to manage users
           </p>
         </div>
       </PageLayout>
@@ -120,8 +120,8 @@ const MinimalUsersPage = () => {
   if (loading) {
     return (
       <PageLayout
-        title="Brukere"
-        subtitle="Laster brukere..."
+        title="Users"
+        subtitle="Loading users..."
       >
         <div className="flex items-center justify-center h-96">
           <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
@@ -131,16 +131,16 @@ const MinimalUsersPage = () => {
   }
 
   const actions = (
-    <button className="bg-sidebar-primary hover:bg-sidebar-primary/90 text-white px-6 py-3 flex items-center space-x-2 transition-colors">
+    <button className="bg-sidebar-primary hover:bg-sidebar-primary/90 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors">
       <Plus className="h-4 w-4" />
-      <span>Ny bruker</span>
+      <span>New User</span>
     </button>
   );
 
   return (
     <PageLayout
-      title="Brukere"
-      subtitle={`Administrer brukerkontoer og tillatelser (${filteredUsers.length} brukere)`}
+      title="Users"
+      subtitle={`Manage user accounts and permissions (${filteredUsers.length} users)`}
       actions={actions}
     >
       {/* Stats Overview */}
@@ -202,10 +202,10 @@ const MinimalUsersPage = () => {
             <Search className="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Søk brukere..."
+              placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-gray-900"
+              className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-teal-900"
             />
           </div>
 
@@ -214,22 +214,22 @@ const MinimalUsersPage = () => {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value as 'ALL' | 'ADMIN' | 'USER')}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-gray-900 min-w-[120px]"
+              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-teal-900 min-w-[120px]"
             >
-              <option value="ALL">Alle roller</option>
+              <option value="ALL">All Roles</option>
               <option value="ADMIN">Admin</option>
-              <option value="USER">Bruker</option>
+              <option value="USER">User</option>
             </select>
 
             <select
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value as 'ALL' | '1' | '2' | '3')}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-gray-900 min-w-[120px]"
+              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-teal-900 min-w-[120px]"
             >
-              <option value="ALL">Alle nivå</option>
-              <option value="1">Nivå 1</option>
-              <option value="2">Nivå 2</option>
-              <option value="3">Nivå 3</option>
+              <option value="ALL">All Levels</option>
+              <option value="1">Level 1</option>
+              <option value="2">Level 2</option>
+              <option value="3">Level 3</option>
             </select>
 
             <button className="px-4 py-3 border border-gray-200 text-gray-600 hover:text-teal-700 hover:border-teal-200 transition-colors rounded-xl">
@@ -248,17 +248,17 @@ const MinimalUsersPage = () => {
                 type="checkbox"
                 checked={selectedUsers.size === filteredUsers.length && filteredUsers.length > 0}
                 onChange={selectAllUsers}
-                className="h-4 w-4 text-neutral-600 border-gray-300 focus:ring-0"
+                className="h-4 w-4 text-gray-400 border-gray-300 rounded focus:ring-2 focus:ring-gray-200"
               />
               <span className="text-sm text-gray-600 font-light uppercase tracking-wider">
-                {selectedUsers.size > 0 ? `${selectedUsers.size} valgt` : `${filteredUsers.length} brukere`}
+                {selectedUsers.size > 0 ? `${selectedUsers.size} selected` : `${filteredUsers.length} users`}
               </span>
             </div>
 
             {selectedUsers.size > 0 && (
               <div className="flex items-center space-x-2">
                 <button className="text-sm text-black hover:text-gray-800 transition-colors">
-                  Slett valgte
+                  Delete Selected
                 </button>
               </div>
             )}
@@ -271,19 +271,19 @@ const MinimalUsersPage = () => {
               <tr>
                 <th className="w-8 px-6 py-3"></th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Bruker
+                  User
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Rolle & Nivå
+                  Role & Level
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Siste innlogging
+                  Last Login
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Handlinger
+                  Actions
                 </th>
               </tr>
             </thead>
@@ -295,18 +295,18 @@ const MinimalUsersPage = () => {
                       type="checkbox"
                       checked={selectedUsers.has(user.id)}
                       onChange={() => toggleUserSelection(user.id)}
-                      className="h-4 w-4 text-neutral-600 border-gray-300 focus:ring-0"
+                      className="h-4 w-4 text-gray-400 border-gray-300 rounded focus:ring-2 focus:ring-gray-200"
                     />
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-3">
-                      <div className="h-8 w-8 bg-teal-100 rounded-full flex items-center justify-center">
-                        <span className="text-xs font-medium text-teal-700">
+                      <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
+                        <span className="text-xs font-medium text-gray-600">
                           {user.name?.charAt(0).toUpperCase() || 'U'}
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                        <p className="text-sm font-medium text-teal-900">{user.name}</p>
                         <p className="text-xs text-gray-500">{user.email}</p>
                       </div>
                     </div>
@@ -315,12 +315,12 @@ const MinimalUsersPage = () => {
                     <div className="flex items-center space-x-2">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                         user.role === 'ADMIN'
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'bg-blue-100 text-blue-800'
+                          ? 'bg-gray-100 text-gray-700'
+                          : 'bg-gray-50 text-gray-600'
                       }`}>
                         {user.role}
                       </span>
-                      <span className="px-2 py-1 text-xs font-medium bg-teal-100 text-teal-800 rounded-full">
+                      <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
                         N{user.level}
                       </span>
                     </div>
@@ -331,14 +331,14 @@ const MinimalUsersPage = () => {
                         user.isActive ? 'bg-gray-500' : 'bg-black'
                       }`} />
                       <span className="text-sm text-gray-600">
-                        {user.isActive ? 'Aktiv' : 'Inaktiv'}
+                        {user.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
                     {user.lastLogin
                       ? new Date(user.lastLogin).toLocaleDateString('nb-NO')
-                      : 'Aldri'
+                      : 'Never'
                     }
                   </td>
                   <td className="px-6 py-4">
@@ -363,7 +363,7 @@ const MinimalUsersPage = () => {
         {filteredUsers.length === 0 && (
           <div className="text-center py-12">
             <UserX className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-sm text-gray-500">Ingen brukere funnet</p>
+            <p className="text-sm text-gray-500">No users found</p>
           </div>
         )}
       </div>

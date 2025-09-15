@@ -223,7 +223,7 @@ const MinimalDashboardHome = () => {
                     <Icon className="h-5 w-5 text-sidebar-foreground/40" />
                   </div>
                   <div className="px-3 py-1 bg-gray-100 text-xs font-light text-gray-500 uppercase tracking-wider rounded-md">
-                    Nivå {stat.title === 'Active Emissions' ? '3' : '2'}+
+                    Level {stat.title === 'Active Emissions' ? '3' : '2'}+
                   </div>
                 </div>
                 <p className="text-xs font-light text-gray-400 mb-2 uppercase tracking-wider">{stat.title}</p>
@@ -273,7 +273,7 @@ const MinimalDashboardHome = () => {
       {/* Shareholder Distribution */}
       {user && user.level >= 2 && chartData.length > 0 && (
         <div className="mb-16">
-          <h2 className="font-serif text-3xl text-teal-900 mb-8">Aksjefordeling</h2>
+          <h2 className="font-serif text-3xl text-teal-900 mb-8">Share Distribution</h2>
           <div className="bg-white border border-gray-200 p-8 rounded-2xl">
 
             {/* Simple Elegant Bars */}
