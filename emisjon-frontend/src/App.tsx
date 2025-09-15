@@ -14,7 +14,6 @@ const ShareholdersPage = lazy(() => import('@/features/dashboard/pages/standard/
 const EmissionsPage = lazy(() => import('@/features/dashboard/pages/standard/EmissionsPage'));
 const MySubscriptionsPage = lazy(() => import('@/features/dashboard/pages/standard/MySubscriptionsPage'));
 const SubscriptionManagementPage = lazy(() => import('@/features/dashboard/pages/standard/SubscriptionManagementPage'));
-const ShareholderSnapshotsPage = lazy(() => import('@/features/dashboard/pages/standard/ShareholderSnapshotsPage'));
 const TradingPage = lazy(() => import('@/features/dashboard/pages/standard/TradingPage'));
 
 // Minimal dashboard pages
@@ -22,7 +21,6 @@ const MinimalDashboardHome = lazy(() => import('@/features/dashboard/pages/minim
 const MinimalDashboardHomeKinfolk = lazy(() => import('@/features/dashboard/pages/minimal/MinimalDashboardHomeKinfolk'));
 const MinimalUsersPage = lazy(() => import('@/features/dashboard/pages/minimal/MinimalUsersPage'));
 const MinimalShareholdersPage = lazy(() => import('@/features/dashboard/pages/minimal/MinimalShareholdersPage'));
-const MinimalShareholderSnapshotsPage = lazy(() => import('@/features/dashboard/pages/minimal/MinimalShareholderSnapshotsPage'));
 const MinimalEmissionsPage = lazy(() => import('@/features/dashboard/pages/minimal/MinimalEmissionsPage'));
 const MinimalMySubscriptionsPage = lazy(() => import('@/features/dashboard/pages/minimal/MinimalMySubscriptionsPage'));
 const MinimalSubscriptionManagementPage = lazy(() => import('@/features/dashboard/pages/minimal/MinimalSubscriptionManagementPage'));
@@ -59,7 +57,6 @@ export default function App() {
             <Route path="kinfolk" element={<MinimalDashboardHomeKinfolk />} />
             <Route path="users" element={<MinimalUsersPage />} />
             <Route path="shareholders" element={<MinimalShareholdersPage />} />
-            <Route path="snapshots" element={<MinimalShareholderSnapshotsPage />} />
             <Route path="emissions" element={<MinimalEmissionsPage />} />
             <Route path="my-subscriptions" element={<MinimalMySubscriptionsPage />} />
             <Route path="subscriptions" element={<MinimalSubscriptionManagementPage />} />
@@ -75,7 +72,6 @@ export default function App() {
             <Route index element={<DashboardHome />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="shareholders" element={<ShareholdersPage />} />
-            <Route path="snapshots" element={<ShareholderSnapshotsPage />} />
             <Route path="emissions" element={<EmissionsPage />} />
             <Route path="my-subscriptions" element={<MySubscriptionsPage />} />
             <Route path="subscriptions" element={<SubscriptionManagementPage />} />

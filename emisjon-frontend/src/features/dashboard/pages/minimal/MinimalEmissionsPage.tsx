@@ -154,7 +154,7 @@ const MinimalEmissionsPage = () => {
   const actions = isAdmin ? (
     <button
       onClick={() => setShowAdd(true)}
-      className="bg-teal-700 hover:bg-teal-900 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors"
+      className="bg-sidebar-primary hover:bg-sidebar-primary/90 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors"
     >
       <Plus className="h-4 w-4" />
       <span>New Emission</span>
@@ -171,10 +171,9 @@ const MinimalEmissionsPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
-            <div className="bg-teal-100 p-3 rounded-xl">
-              <Activity className="h-5 w-5 text-teal-700" />
+            <div className="p-3 relative">
+              <Activity className="h-5 w-5 text-sidebar-foreground/70" />
             </div>
-            <ArrowUpRight className="h-4 w-4 text-green-600" />
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Emissions</p>
           <p className="text-3xl font-serif text-teal-900">
@@ -184,10 +183,9 @@ const MinimalEmissionsPage = () => {
 
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
-            <div className="bg-blue-100 p-3 rounded-xl">
-              <TrendingUp className="h-5 w-5 text-blue-700" />
+            <div className="p-3 relative">
+              <TrendingUp className="h-5 w-5 text-sidebar-foreground/70" />
             </div>
-            <ArrowUpRight className="h-4 w-4 text-blue-600" />
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Active</p>
           <p className="text-3xl font-serif text-teal-900">
@@ -197,10 +195,9 @@ const MinimalEmissionsPage = () => {
 
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
-            <div className="bg-green-100 p-3 rounded-xl">
-              <DollarSign className="h-5 w-5 text-green-700" />
+            <div className="p-3 relative">
+              <DollarSign className="h-5 w-5 text-sidebar-foreground/70" />
             </div>
-            <ArrowDownRight className="h-4 w-4 text-orange-600" />
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Value</p>
           <p className="text-3xl font-serif text-teal-900">
@@ -210,8 +207,8 @@ const MinimalEmissionsPage = () => {
 
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
-            <div className="bg-purple-100 p-3 rounded-xl">
-              <Users className="h-5 w-5 text-purple-700" />
+            <div className="p-3 relative">
+              <Users className="h-5 w-5 text-sidebar-foreground/70" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Subscriptions</p>
@@ -328,7 +325,7 @@ const MinimalEmissionsPage = () => {
                               </button>
                               <button
                                 onClick={() => setDeleteTarget(emission)}
-                                className="text-gray-600 hover:text-red-600 transition-colors"
+                                className="text-gray-600 hover:text-black transition-colors"
                                 title="Delete emission"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -338,7 +335,7 @@ const MinimalEmissionsPage = () => {
                           {emission.status === 'ACTIVE' && (
                             <button
                               onClick={() => setSubscribeTarget(emission)}
-                              className="px-3 py-1 bg-teal-700 text-white text-xs hover:bg-teal-800 transition-colors rounded-lg"
+                              className="px-3 py-1 bg-sidebar-primary text-white text-xs hover:bg-sidebar-primary/90 transition-colors rounded-lg"
                             >
                               Subscribe
                             </button>
@@ -359,7 +356,7 @@ const MinimalEmissionsPage = () => {
               Create your first share emission to start capital raising
             </p>
             {isAdmin && (
-              <button className="px-6 py-3 bg-teal-700 text-white text-sm hover:bg-teal-800 transition-colors rounded-xl">
+              <button className="px-6 py-3 bg-sidebar-primary text-white text-sm hover:bg-sidebar-primary/90 transition-colors rounded-xl">
                 Create Emission
               </button>
             )}

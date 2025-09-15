@@ -128,7 +128,7 @@ const MinimalUsersPage = () => {
   }
 
   const actions = (
-    <button className="bg-teal-700 hover:bg-teal-900 text-white px-4 py-2 rounded-xl flex items-center space-x-2 transition-colors">
+    <button className="bg-sidebar-primary hover:bg-sidebar-primary/90 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors">
       <Plus className="h-4 w-4" />
       <span>Ny bruker</span>
     </button>
@@ -203,7 +203,7 @@ const MinimalUsersPage = () => {
 
             {selectedUsers.size > 0 && (
               <div className="flex items-center space-x-2">
-                <button className="text-sm text-red-600 hover:text-red-800 transition-colors">
+                <button className="text-sm text-black hover:text-gray-800 transition-colors">
                   Slett valgte
                 </button>
               </div>
@@ -274,7 +274,7 @@ const MinimalUsersPage = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-2">
                       <div className={`h-2 w-2 rounded-full ${
-                        user.isActive ? 'bg-green-500' : 'bg-red-500'
+                        user.isActive ? 'bg-green-500' : 'bg-black'
                       }`} />
                       <span className="text-sm text-gray-600">
                         {user.isActive ? 'Aktiv' : 'Inaktiv'}
@@ -292,7 +292,7 @@ const MinimalUsersPage = () => {
                       <button className="text-gray-400 hover:text-teal-600 transition-colors">
                         <Edit3 className="h-4 w-4" />
                       </button>
-                      <button className="text-gray-400 hover:text-red-600 transition-colors">
+                      <button className="text-gray-400 hover:text-black transition-colors">
                         <Trash2 className="h-4 w-4" />
                       </button>
                       <button className="text-gray-400 hover:text-gray-600 transition-colors">

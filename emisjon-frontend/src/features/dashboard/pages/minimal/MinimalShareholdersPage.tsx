@@ -6,22 +6,20 @@ import PageLayout from '@/components/layout/PageLayout';
 import AddShareholderModal from '@/components/shareholder/AddShareholderModal';
 import EditShareholderModal from '@/components/shareholder/EditShareholderModal';
 import DeleteShareholderModal from '@/components/shareholder/DeleteShareholderModal';
+import ShareholderSearchBar from '@/components/shareholder/ShareholderSearchBar';
+import ShareholderTableWithSort from '@/components/shareholder/ShareholderTableWithSort';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ErrorAlert } from '@/components/ui/error-alert';
 import { useErrorAlert } from '@/hooks/useErrorAlert';
 import {
-  Search,
   Plus,
   Building2,
   TrendingUp,
   Calendar,
-  Edit,
-  Trash2,
   UserX,
   Loader2,
-  Phone,
-  Mail,
-  User
+  Users
 } from 'lucide-react';
 
 const MinimalShareholdersPage = () => {
@@ -160,7 +158,7 @@ const MinimalShareholdersPage = () => {
         subtitle="Access denied"
       >
         <div className="bg-white border border-gray-200 p-12 text-center rounded-2xl shadow-soft">
-          <UserX className="h-16 w-16 text-gray-400 mx-auto mb-6" />
+          <UserX className="h-16 w-16 text-sidebar-foreground/30 mx-auto mb-6" />
           <h2 className="text-2xl font-serif text-teal-900 mb-3">Level 2+ Access Required</h2>
           <p className="text-gray-600 max-w-md mx-auto">
             Shareholder management requires Level 2+ access or admin privileges.
@@ -176,8 +174,82 @@ const MinimalShareholdersPage = () => {
         title="Shareholders"
         subtitle="Loading shareholders..."
       >
-        <div className="flex items-center justify-center h-96">
-          <Loader2 className="h-8 w-8 animate-spin text-teal-700" />
+        {/* Stats Overview Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {[...Array(4)].map((_, index) => (
+            <div key={index} className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+              <div className="flex items-center justify-between mb-4">
+                <div className="bg-gray-100 p-3 rounded-xl">
+                  <Skeleton className="h-5 w-5" />
+                </div>
+              </div>
+              <Skeleton className="h-3 w-24 mb-2" />
+              <Skeleton className="h-8 w-16" />
+            </div>
+          ))}
+        </div>
+
+        {/* Search bar skeleton */}
+        <div className="mb-6">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-soft p-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+              <Skeleton className="h-10 flex-1 max-w-md" />
+              {isAdmin && <Skeleton className="h-10 w-40" />}
+            </div>
+          </div>
+        </div>
+
+        {/* Table skeleton */}
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-soft overflow-hidden">
+          <div className="p-6 border-b border-gray-200">
+            <Skeleton className="h-6 w-32" />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  {[...Array(5)].map((_, i) => (
+                    <th key={i} className="px-6 py-4">
+                      <Skeleton className="h-4 w-20" />
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {[...Array(8)].map((_, index) => (
+                  <tr key={index}>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <Skeleton className="h-10 w-10 rounded-full mr-4" />
+                        <div>
+                          <Skeleton className="h-4 w-32 mb-1" />
+                          <Skeleton className="h-3 w-20" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div>
+                        <Skeleton className="h-4 w-40 mb-1" />
+                        <Skeleton className="h-3 w-28" />
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Skeleton className="h-4 w-16" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <Skeleton className="h-4 w-12" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-4" />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </PageLayout>
     );
@@ -193,9 +265,9 @@ const MinimalShareholdersPage = () => {
   const actions = isAdmin ? (
     <Button
       onClick={() => setShowAddModal(true)}
-      className="bg-teal-700 hover:bg-teal-900 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors"
+      className="bg-sidebar-primary hover:bg-sidebar-primary/90 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors"
     >
-      <Plus className="h-4 w-4" />
+      <Plus className="h-4 w-4 text-sidebar-foreground/70" />
       <span>Add Shareholder</span>
     </Button>
   ) : null;
@@ -217,8 +289,8 @@ const MinimalShareholdersPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
-            <div className="bg-blue-100 p-3 rounded-xl">
-              <Users className="h-5 w-5 text-blue-700" />
+            <div className="p-3 relative">
+              <Users className="h-5 w-5 text-sidebar-foreground/70" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Shareholders</p>
@@ -229,8 +301,8 @@ const MinimalShareholdersPage = () => {
 
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
-            <div className="bg-green-100 p-3 rounded-xl">
-              <TrendingUp className="h-5 w-5 text-green-700" />
+            <div className="p-3 relative">
+              <TrendingUp className="h-5 w-5 text-sidebar-foreground/70" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Shares</p>
@@ -241,8 +313,8 @@ const MinimalShareholdersPage = () => {
 
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
-            <div className="bg-purple-100 p-3 rounded-xl">
-              <Building2 className="h-5 w-5 text-purple-700" />
+            <div className="p-3 relative">
+              <Building2 className="h-5 w-5 text-sidebar-foreground/70" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Active Investors</p>
@@ -253,8 +325,8 @@ const MinimalShareholdersPage = () => {
 
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
-            <div className="bg-teal-100 p-3 rounded-xl">
-              <Calendar className="h-5 w-5 text-teal-700" />
+            <div className="p-3 relative">
+              <Calendar className="h-5 w-5 text-sidebar-foreground/70" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Avg. Shares</p>
@@ -266,143 +338,28 @@ const MinimalShareholdersPage = () => {
 
       {/* Search */}
       <div className="mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <input
-            type="text"
-            placeholder="Search shareholders..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-          />
-        </div>
+        <ShareholderSearchBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onAddClick={() => setShowAddModal(true)}
+        />
       </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="mb-6">
+          <div className="rounded-xl border border-gray-300 bg-gray-50 text-black p-4">
+            {error}
+          </div>
+        </div>
+      )}
 
       {/* Shareholders Table */}
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-soft overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-serif text-teal-900">Shareholders</h2>
-        </div>
-
-        {error && (
-          <div className="p-6 border-b border-gray-200">
-            <div className="rounded-xl border border-red-300 bg-red-50 text-red-800 p-4">
-              {error}
-            </div>
-          </div>
-        )}
-
-        {filteredShareholders.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Shareholder
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contact
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Shares
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ownership %
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredShareholders.map((shareholder) => {
-                  const ownershipPercentage = stats.totalShares > 0
-                    ? ((shareholder.shares / stats.totalShares) * 100).toFixed(2)
-                    : '0.00';
-
-                  return (
-                    <tr key={shareholder.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center">
-                          <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center mr-4">
-                            <User className="h-5 w-5 text-teal-700" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {shareholder.name}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              ID: {shareholder.id.slice(0, 8)}...
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">
-                          <div className="flex items-center mb-1">
-                            <Mail className="h-3 w-3 text-gray-400 mr-2" />
-                            {shareholder.email}
-                          </div>
-                          {shareholder.phone && (
-                            <div className="flex items-center">
-                              <Phone className="h-3 w-3 text-gray-400 mr-2" />
-                              {shareholder.phone}
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {shareholder.shares.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {ownershipPercentage}%
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-2">
-                          {isAdmin && (
-                            <>
-                              <button
-                                onClick={() => handleEditShareholder(shareholder)}
-                                className="text-gray-600 hover:text-teal-700 transition-colors"
-                                title="Edit shareholder"
-                              >
-                                <Edit className="h-4 w-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteShareholder(shareholder)}
-                                className="text-gray-600 hover:text-red-600 transition-colors"
-                                title="Delete shareholder"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="text-center py-16">
-            <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-6" />
-            <h3 className="text-xl font-serif text-teal-900 mb-3">No shareholders found</h3>
-            <p className="text-gray-600 mb-6">
-              {searchTerm ? 'Try adjusting your search terms' : 'Add your first shareholder to get started'}
-            </p>
-            {isAdmin && !searchTerm && (
-              <Button
-                onClick={() => setShowAddModal(true)}
-                className="px-6 py-3 bg-teal-700 text-white text-sm hover:bg-teal-800 transition-colors rounded-xl"
-              >
-                Add Shareholder
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
+      <ShareholderTableWithSort
+        shareholders={filteredShareholders}
+        onDelete={handleDeleteShareholder}
+        onEdit={handleEditShareholder}
+      />
 
       {/* Modals */}
       {showAddModal && (

@@ -157,13 +157,21 @@ const MinimalTradingPage = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-6 py-4 text-sm font-light border-b-2 transition-colors ${
+              className={`flex items-center space-x-2 px-6 py-4 text-sm font-light border-b-2 transition-colors relative ${
                 activeTab === tab.id
                   ? 'border-teal-700 text-teal-900'
                   : 'border-transparent text-gray-600 hover:text-teal-900'
               }`}
             >
-              <Icon className="h-4 w-4" />
+              <span className="relative flex items-center">
+                {tab.id === 'dashboard' && (
+                  <span className="absolute -left-3 -top-5 flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-600"></span>
+                  </span>
+                )}
+                <Icon className="h-4 w-4" />
+              </span>
               <span>{tab.label}</span>
             </button>
           );
@@ -177,10 +185,9 @@ const MinimalTradingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
               <div className="flex items-center justify-between mb-4">
-                <div className="bg-teal-100 p-3 rounded-xl">
-                  <Activity className="h-5 w-5 text-teal-700" />
+                <div className="p-3 relative">
+                  <Activity className="h-5 w-5 text-sidebar-foreground/70" />
                 </div>
-                <ArrowUpRight className="h-4 w-4 text-green-600" />
               </div>
               <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Trades</p>
               <p className="text-3xl font-serif text-teal-900">
@@ -190,10 +197,9 @@ const MinimalTradingPage = () => {
 
             <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
               <div className="flex items-center justify-between mb-4">
-                <div className="bg-blue-100 p-3 rounded-xl">
-                  <TrendingUp className="h-5 w-5 text-blue-700" />
+                <div className="p-3 relative">
+                  <TrendingUp className="h-5 w-5 text-sidebar-foreground/70" />
                 </div>
-                <ArrowUpRight className="h-4 w-4 text-blue-600" />
               </div>
               <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Volume</p>
               <p className="text-3xl font-serif text-teal-900">
@@ -203,10 +209,9 @@ const MinimalTradingPage = () => {
 
             <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
               <div className="flex items-center justify-between mb-4">
-                <div className="bg-green-100 p-3 rounded-xl">
-                  <DollarSign className="h-5 w-5 text-green-700" />
+                <div className="p-3 relative">
+                  <DollarSign className="h-5 w-5 text-sidebar-foreground/70" />
                 </div>
-                <ArrowDownRight className="h-4 w-4 text-orange-600" />
               </div>
               <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Avg. Price</p>
               <p className="text-3xl font-serif text-teal-900">
@@ -216,8 +221,8 @@ const MinimalTradingPage = () => {
 
             <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
               <div className="flex items-center justify-between mb-4">
-                <div className="bg-purple-100 p-3 rounded-xl">
-                  <Users className="h-5 w-5 text-purple-700" />
+                <div className="p-3 relative">
+                  <Users className="h-5 w-5 text-sidebar-foreground/70" />
                 </div>
               </div>
               <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Active Orders</p>
@@ -240,17 +245,17 @@ const MinimalTradingPage = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className={`px-3 py-1 text-xs font-medium rounded-full ${
                         trade.type === 'BUY'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+                          ? 'bg-gray-100 text-gray-800'
+                          : 'bg-gray-100 text-gray-800'
                       }`}>
                         {trade.type}
                       </div>
                       <div className={`px-3 py-1 text-xs font-medium rounded-full ${
                         trade.status === 'APPROVED'
-                          ? 'bg-blue-100 text-blue-800'
+                          ? 'bg-gray-100 text-gray-800'
                           : trade.status === 'PENDING'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
+                          ? 'bg-gray-100 text-gray-800'
+                          : 'bg-gray-100 text-gray-800'
                       }`}>
                         {trade.status}
                       </div>

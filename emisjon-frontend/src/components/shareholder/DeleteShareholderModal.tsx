@@ -36,7 +36,7 @@ export default function DeleteShareholderModal({
           </Button>
           <Button 
             onClick={onDelete}
-            className="bg-red-600 hover:bg-red-700 text-white border-2 border-red-700/20 hover:border-red-700/40"
+            className="bg-black hover:bg-gray-800 text-white border-2 border-gray-700/20 hover:border-gray-700/40"
           >
             Delete Shareholder
           </Button>

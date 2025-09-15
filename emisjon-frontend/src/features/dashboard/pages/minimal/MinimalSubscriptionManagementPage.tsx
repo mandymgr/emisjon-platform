@@ -132,7 +132,7 @@ const MinimalSubscriptionManagementPage = () => {
       >
         <div className="max-w-2xl mx-auto text-center">
           <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-soft">
-            <UserX className="h-16 w-16 text-gray-300 mx-auto mb-6" />
+            <UserX className="h-16 w-16 text-sidebar-foreground/30 mx-auto mb-6" />
             <h2 className="text-2xl font-serif text-teal-900 mb-3">Admin Level 2+ påkrevd</h2>
             <p className="text-gray-600 max-w-md mx-auto">
               Abonnementsstyring krever administratorrettigheter med Level 2+ tilgang. Kontakt din administrator for tilgang.
@@ -150,7 +150,7 @@ const MinimalSubscriptionManagementPage = () => {
         subtitle="Henter abonnementsdata"
       >
         <div className="flex items-center justify-center h-96">
-          <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-sidebar-foreground/70" />
         </div>
       </PageLayout>
     );
@@ -158,19 +158,19 @@ const MinimalSubscriptionManagementPage = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'PENDING': return <Clock className="h-4 w-4 text-yellow-600" />;
-      case 'APPROVED': return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'REJECTED': return <XCircle className="h-4 w-4 text-red-600" />;
-      default: return <AlertCircle className="h-4 w-4 text-neutral-600" />;
+      case 'PENDING': return <Clock className="h-4 w-4 text-sidebar-foreground/70" />;
+      case 'APPROVED': return <CheckCircle className="h-4 w-4 text-sidebar-foreground/70" />;
+      case 'REJECTED': return <XCircle className="h-4 w-4 text-black" />;
+      default: return <AlertCircle className="h-4 w-4 text-sidebar-foreground/70" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'PENDING': return 'bg-yellow-100 text-yellow-800';
-      case 'APPROVED': return 'bg-green-100 text-green-800';
-      case 'REJECTED': return 'bg-red-100 text-red-800';
-      default: return 'bg-neutral-100 text-neutral-800';
+      case 'PENDING': return 'bg-gray-100 text-black';
+      case 'APPROVED': return 'bg-gray-100 text-black';
+      case 'REJECTED': return 'bg-gray-100 text-black';
+      default: return 'bg-gray-100 text-black';
     }
   };
 
@@ -180,7 +180,7 @@ const MinimalSubscriptionManagementPage = () => {
       subtitle="Se og administrer alle abonnementsforespørsler"
       actions={
         <div className="flex items-center space-x-4">
-          <Shield className="h-6 w-6 text-teal-700" />
+          <Shield className="h-6 w-6 text-sidebar-foreground/70" />
         </div>
       }
     >
@@ -188,8 +188,9 @@ const MinimalSubscriptionManagementPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
         <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-soft">
           <div className="flex items-center justify-between mb-6">
-            <Users className="h-6 w-6 text-teal-700" />
-            <ArrowUpRight className="h-4 w-4 text-blue-600" />
+            <div className="p-3 relative">
+              <Users className="h-5 w-5 text-sidebar-foreground/70" />
+            </div>
           </div>
           <p className="text-sm text-gray-600 mb-2 uppercase tracking-wider font-light">Totale abonnementer</p>
           <p className="text-3xl font-serif text-teal-900">
@@ -199,8 +200,9 @@ const MinimalSubscriptionManagementPage = () => {
 
         <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-soft">
           <div className="flex items-center justify-between mb-6">
-            <Clock className="h-6 w-6 text-teal-700" />
-            <ArrowUpRight className="h-4 w-4 text-yellow-600" />
+            <div className="p-3 relative">
+              <Clock className="h-5 w-5 text-sidebar-foreground/70" />
+            </div>
           </div>
           <p className="text-sm text-gray-600 mb-2 uppercase tracking-wider font-light">Venter godkjenning</p>
           <p className="text-3xl font-serif text-teal-900">
@@ -210,8 +212,9 @@ const MinimalSubscriptionManagementPage = () => {
 
         <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-soft">
           <div className="flex items-center justify-between mb-6">
-            <TrendingUp className="h-6 w-6 text-teal-700" />
-            <ArrowDownRight className="h-4 w-4 text-green-600" />
+            <div className="p-3 relative">
+              <TrendingUp className="h-5 w-5 text-sidebar-foreground/70" />
+            </div>
           </div>
           <p className="text-sm text-gray-600 mb-2 uppercase tracking-wider font-light">Godkjent i dag</p>
           <p className="text-3xl font-serif text-teal-900">
@@ -221,10 +224,12 @@ const MinimalSubscriptionManagementPage = () => {
 
         <div className="bg-white border border-neutral-200 p-8">
           <div className="flex items-center justify-between mb-6">
-            <DollarSign className="h-6 w-6 text-neutral-600" />
+            <div className="p-3 relative">
+              <DollarSign className="h-5 w-5 text-sidebar-foreground/70" />
+            </div>
           </div>
-          <p className="text-sm text-neutral-600 mb-2">Total Value</p>
-          <p className="text-3xl font-light text-neutral-900">
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Value</p>
+          <p className="text-3xl font-serif text-teal-900">
             ${stats?.totalValue ? Math.floor(stats.totalValue / 1000000) : 0}M
           </p>
         </div>
@@ -235,7 +240,7 @@ const MinimalSubscriptionManagementPage = () => {
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="h-5 w-5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="h-5 w-5 text-sidebar-foreground/50 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search subscriptions..."
@@ -293,7 +298,7 @@ const MinimalSubscriptionManagementPage = () => {
                       </div>
                       <div className="flex items-center space-x-2 ml-3">
                         {getStatusIcon(subscription.status)}
-                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(subscription.status)}`}>
+                        <span className={`px-3 py-1 text-xs font-medium rounded-md ${getStatusColor(subscription.status)}`}>
                           {subscription.status}
                         </span>
                       </div>
@@ -326,14 +331,14 @@ const MinimalSubscriptionManagementPage = () => {
                     {/* Dates */}
                     <div className="pt-4 border-t border-neutral-100 space-y-2">
                       <div className="flex items-center space-x-2 text-xs text-neutral-500">
-                        <Calendar className="h-3 w-3" />
+                        <Calendar className="h-3 w-3 text-sidebar-foreground/70" />
                         <span>
                           Requested: {new Date(subscription.createdAt).toLocaleDateString()}
                         </span>
                       </div>
                       {subscription.reviewedAt && (
                         <div className="flex items-center space-x-2 text-xs text-neutral-500">
-                          <Activity className="h-3 w-3" />
+                          <Activity className="h-3 w-3 text-sidebar-foreground/70" />
                           <span>
                             Reviewed: {new Date(subscription.reviewedAt).toLocaleDateString()}
                           </span>
@@ -346,17 +351,17 @@ const MinimalSubscriptionManagementPage = () => {
                   <div className="p-6 pt-0">
                     <div className="flex space-x-2">
                       <button className="flex-1 py-2 border border-neutral-300 text-sm text-neutral-600 hover:text-neutral-900 hover:border-neutral-400 transition-colors flex items-center justify-center space-x-1">
-                        <Eye className="h-3 w-3" />
+                        <Eye className="h-3 w-3 text-sidebar-foreground/70" />
                         <span>Details</span>
                       </button>
                       {subscription.status === 'PENDING' && (
                         <>
                           <button className="flex-1 py-2 bg-green-600 text-white text-sm hover:bg-green-700 transition-colors flex items-center justify-center space-x-1">
-                            <Check className="h-3 w-3" />
+                            <Check className="h-3 w-3 text-sidebar-foreground/70" />
                             <span>Approve</span>
                           </button>
-                          <button className="flex-1 py-2 bg-red-600 text-white text-sm hover:bg-red-700 transition-colors flex items-center justify-center space-x-1">
-                            <X className="h-3 w-3" />
+                          <button className="flex-1 py-2 bg-black text-white text-sm hover:bg-gray-800 transition-colors flex items-center justify-center space-x-1">
+                            <X className="h-3 w-3 text-sidebar-foreground/70" />
                             <span>Reject</span>
                           </button>
                         </>
@@ -368,7 +373,7 @@ const MinimalSubscriptionManagementPage = () => {
             </div>
           ) : (
             <div className="text-center py-16">
-              <Shield className="h-16 w-16 text-neutral-300 mx-auto mb-6" />
+              <Shield className="h-16 w-16 text-sidebar-foreground/30 mx-auto mb-6" />
               <h3 className="text-xl font-light text-neutral-900 mb-3">No Subscriptions Found</h3>
               <p className="text-neutral-600 mb-6">
                 {searchTerm || statusFilter !== 'ALL'

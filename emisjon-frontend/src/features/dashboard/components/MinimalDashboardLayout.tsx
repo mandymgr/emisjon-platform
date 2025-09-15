@@ -125,7 +125,6 @@ const MinimalDashboardLayout = () => {
   const dataNavigation: NavigationItem[] = [
     { name: 'Shareholders', href: '/minimal-dashboard/shareholders', icon: Building2, requiresLevel: 2 },
     { name: 'Emission', href: '/minimal-dashboard/emissions', icon: TrendingUp },
-    { name: 'Snapshots', href: '/minimal-dashboard/snapshots', icon: Camera, requiresLevel: 2 },
   ];
 
   const adminNavigation: NavigationItem[] = [
