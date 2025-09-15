@@ -182,28 +182,18 @@ const MinimalDashboardLayout = () => {
         {/* Scandinavian Sidebar */}
         <aside
           className={`
-            relative z-30 h-screen shrink-0 border-r border-[#E6E6E0] bg-white/90 backdrop-blur dark:border-white/15 dark:bg-white/5
+            fixed top-0 left-0 z-30 h-full shrink-0 border-r border-[#E6E6E0] bg-white/90 backdrop-blur dark:border-white/15 dark:bg-white/5
             transition-all duration-300 ease-in-out flex flex-col
             ${sidebarWidth}
             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-            lg:translate-x-0 fixed lg:static
+            lg:translate-x-0
           `}
           role="navigation"
           aria-label="Main navigation"
           aria-expanded={!isSidebarCollapsed}
         >
-          {/* Desktop collapse toggle */}
-          <div className="relative border-b border-sidebar-border">
-            <button
-              onClick={toggleSidebarCollapse}
-              className="hidden lg:flex absolute -right-3 top-4 w-6 h-6 items-center justify-center bg-white dark:bg-white/10 border border-[#E6E6E0] dark:border-white/15 rounded-full hover:bg-primary/10 dark:hover:bg-white/20 transition-colors"
-              aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              <ChevronLeft
-                className={`h-4 w-4 transition-transform duration-200 ${isSidebarCollapsed ? 'rotate-180' : ''}`}
-              />
-            </button>
-
+          {/* Header area with logo and controls */}
+          <div className="border-b border-sidebar-border">
             {/* Mobile close button in header area */}
             <div className="lg:hidden flex justify-end p-4">
               <button
@@ -215,13 +205,26 @@ const MinimalDashboardLayout = () => {
               </button>
             </div>
 
-            {/* Logo positioned lower to align with main content */}
-            <div className="flex justify-center pb-10 pt-10">
-              <img
-                src="/logo.png"
-                alt="Logo"
-                className="h-16 w-16"
-              />
+            {/* Logo and collapse toggle */}
+            <div className={`flex items-center px-6 py-8 ${isSidebarCollapsed ? 'flex-col space-y-4' : 'justify-between'}`}>
+              <div className={`flex items-center ${isSidebarCollapsed ? '' : 'flex-1 justify-center'}`}>
+                <img
+                  src="/logo.png"
+                  alt="Logo"
+                  className={`${isSidebarCollapsed ? 'h-8 w-8' : 'h-16 w-16'} transition-all duration-300`}
+                />
+              </div>
+
+              {/* Desktop collapse toggle positioned next to logo */}
+              <button
+                onClick={toggleSidebarCollapse}
+                className="hidden lg:flex w-6 h-6 items-center justify-center bg-white dark:bg-white/10 border border-[#E6E6E0] dark:border-white/15 rounded-full hover:bg-primary/10 dark:hover:bg-white/20 transition-colors"
+                aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                <ChevronLeft
+                  className={`h-4 w-4 transition-transform duration-200 ${isSidebarCollapsed ? 'rotate-180' : ''}`}
+                />
+              </button>
             </div>
           </div>
 
@@ -456,7 +459,7 @@ const MinimalDashboardLayout = () => {
         </aside>
 
         {/* Main content */}
-        <div className="flex-1 lg:ml-0">
+        <div className={`flex-1 transition-all duration-300 ${isSidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[260px]'}`}>
           {/* Mobile header for hamburger menu */}
           <div className="lg:hidden bg-white/90 backdrop-blur dark:bg-white/5 border-b border-[#E6E6E0] dark:border-white/15 px-4 py-3">
             <button

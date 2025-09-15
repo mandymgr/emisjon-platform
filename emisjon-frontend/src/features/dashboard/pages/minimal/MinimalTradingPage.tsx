@@ -104,17 +104,15 @@ const MinimalTradingPage = () => {
   if (!hasAccess) {
     return (
       <PageLayout
-        title="Tilgang nektet"
-        subtitle="Du har ikke tilstrekkelig tilgang til denne siden"
+        title="Trading"
+        subtitle="Access denied"
       >
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-soft">
-            <UserX className="h-16 w-16 text-gray-300 mx-auto mb-6" />
-            <h2 className="text-2xl font-serif text-teal-900 mb-3">Handelstilgang påkrevd</h2>
-            <p className="text-gray-600 max-w-md mx-auto">
-              Level 1+ tilgang kreves for å bruke handelsplattformen. Kontakt din administrator for tilgang.
-            </p>
-          </div>
+        <div className="bg-white border border-gray-200 p-12 text-center rounded-2xl shadow-soft">
+          <UserX className="h-16 w-16 text-gray-400 mx-auto mb-6" />
+          <h2 className="text-2xl font-serif text-teal-900 mb-3">Trading Access Required</h2>
+          <p className="text-gray-600 max-w-md mx-auto">
+            Level 1+ access is required to use the trading platform. Contact your administrator for access.
+          </p>
         </div>
       </PageLayout>
     );
@@ -123,8 +121,8 @@ const MinimalTradingPage = () => {
   if (loading) {
     return (
       <PageLayout
-        title="Handel"
-        subtitle="Laster handelsdata..."
+        title="Trading"
+        subtitle="Loading trading data..."
       >
         <div className="flex items-center justify-center h-96">
           <Loader2 className="h-8 w-8 animate-spin text-teal-700" />
@@ -142,8 +140,8 @@ const MinimalTradingPage = () => {
 
   return (
     <PageLayout
-      title="Handelsplattform"
-      subtitle="Handlé aksjer og se markedsaktivitet"
+      title="Trading Platform"
+      subtitle="Trade shares and view market activity"
       actions={
         <div className="flex items-center space-x-4">
           <Activity className="h-6 w-6 text-teal-700" />
@@ -152,7 +150,7 @@ const MinimalTradingPage = () => {
     >
 
       {/* Tab Navigation */}
-      <div className="flex space-x-1 mb-12 border-b border-neutral-200">
+      <div className="flex space-x-1 mb-8 border-b border-gray-200">
         {tabs.map(tab => {
           const Icon = tab.icon;
           return (
@@ -161,8 +159,8 @@ const MinimalTradingPage = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center space-x-2 px-6 py-4 text-sm font-light border-b-2 transition-colors ${
                 activeTab === tab.id
-                  ? 'border-neutral-900 text-neutral-900'
-                  : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                  ? 'border-teal-700 text-teal-900'
+                  : 'border-transparent text-gray-600 hover:text-teal-900'
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -174,64 +172,72 @@ const MinimalTradingPage = () => {
 
       {/* Dashboard Tab */}
       {activeTab === 'dashboard' && (
-        <div className="space-y-12">
+        <div className="space-y-8">
           {/* Market Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="bg-white border border-neutral-200 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <Activity className="h-6 w-6 text-neutral-600" />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+              <div className="flex items-center justify-between mb-4">
+                <div className="bg-teal-100 p-3 rounded-xl">
+                  <Activity className="h-5 w-5 text-teal-700" />
+                </div>
                 <ArrowUpRight className="h-4 w-4 text-green-600" />
               </div>
-              <p className="text-sm text-neutral-600 mb-2">Total Trades</p>
-              <p className="text-3xl font-light text-neutral-900">
+              <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Trades</p>
+              <p className="text-3xl font-serif text-teal-900">
                 {marketStats?.totalTrades.toLocaleString()}
               </p>
             </div>
 
-            <div className="bg-white border border-neutral-200 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <TrendingUp className="h-6 w-6 text-neutral-600" />
+            <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+              <div className="flex items-center justify-between mb-4">
+                <div className="bg-blue-100 p-3 rounded-xl">
+                  <TrendingUp className="h-5 w-5 text-blue-700" />
+                </div>
                 <ArrowUpRight className="h-4 w-4 text-blue-600" />
               </div>
-              <p className="text-sm text-neutral-600 mb-2">Volume</p>
-              <p className="text-3xl font-light text-neutral-900">
+              <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Volume</p>
+              <p className="text-3xl font-serif text-teal-900">
                 {marketStats?.totalVolume.toLocaleString()}
               </p>
             </div>
 
-            <div className="bg-white border border-neutral-200 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <DollarSign className="h-6 w-6 text-neutral-600" />
+            <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+              <div className="flex items-center justify-between mb-4">
+                <div className="bg-green-100 p-3 rounded-xl">
+                  <DollarSign className="h-5 w-5 text-green-700" />
+                </div>
                 <ArrowDownRight className="h-4 w-4 text-orange-600" />
               </div>
-              <p className="text-sm text-neutral-600 mb-2">Avg. Price</p>
-              <p className="text-3xl font-light text-neutral-900">
+              <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Avg. Price</p>
+              <p className="text-3xl font-serif text-teal-900">
                 ${marketStats?.avgPrice.toFixed(2)}
               </p>
             </div>
 
-            <div className="bg-white border border-neutral-200 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <Users className="h-6 w-6 text-neutral-600" />
+            <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
+              <div className="flex items-center justify-between mb-4">
+                <div className="bg-purple-100 p-3 rounded-xl">
+                  <Users className="h-5 w-5 text-purple-700" />
+                </div>
               </div>
-              <p className="text-sm text-neutral-600 mb-2">Active Orders</p>
-              <p className="text-3xl font-light text-neutral-900">
+              <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Active Orders</p>
+              <p className="text-3xl font-serif text-teal-900">
                 {marketStats?.activeOrders}
               </p>
             </div>
           </div>
 
-          {/* Recent Trades - Gallery Style */}
-          <div className="bg-white border border-neutral-200">
-            <div className="p-8 border-b border-neutral-200">
-              <h2 className="text-xl font-light text-neutral-900">Recent Trading Activity</h2>
+          {/* Recent Trades */}
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-soft">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-serif text-teal-900">Recent Trading Activity</h2>
             </div>
 
-            <div className="p-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {recentTrades.map(trade => (
-                  <div key={trade.id} className="border-l-2 border-neutral-200 pl-6">
-                    <div className="flex items-center justify-between mb-3">
+                  <div key={trade.id} className="border border-gray-200 rounded-xl p-6 hover:border-teal-200 hover:shadow-soft transition-all">
+                    <div className="flex items-center justify-between mb-4">
                       <div className={`px-3 py-1 text-xs font-medium rounded-full ${
                         trade.type === 'BUY'
                           ? 'bg-green-100 text-green-800'
@@ -250,30 +256,30 @@ const MinimalTradingPage = () => {
                       </div>
                     </div>
 
-                    <div className="space-y-2 mb-4">
+                    <div className="space-y-3 mb-4">
                       <div className="flex justify-between">
-                        <span className="text-sm text-neutral-600">Shares</span>
-                        <span className="text-sm font-medium text-neutral-900">
+                        <span className="text-sm text-gray-600">Shares</span>
+                        <span className="text-sm font-medium text-gray-900">
                           {trade.shares.toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-neutral-600">Price</span>
-                        <span className="text-sm font-medium text-neutral-900">
+                        <span className="text-sm text-gray-600">Price</span>
+                        <span className="text-sm font-medium text-gray-900">
                           ${trade.price.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-neutral-600">Total</span>
-                        <span className="text-sm font-medium text-neutral-900">
+                        <span className="text-sm text-gray-600">Total</span>
+                        <span className="text-sm font-medium text-gray-900">
                           ${(trade.shares * trade.price).toLocaleString()}
                         </span>
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-neutral-100">
-                      <p className="text-sm text-neutral-900 mb-1">{trade.shareholder}</p>
-                      <p className="text-xs text-neutral-500">
+                    <div className="pt-4 border-t border-gray-100">
+                      <p className="text-sm font-medium text-gray-900 mb-1">{trade.shareholder}</p>
+                      <p className="text-xs text-gray-500">
                         {new Date(trade.createdAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -287,10 +293,10 @@ const MinimalTradingPage = () => {
 
       {/* Admin Tab */}
       {activeTab === 'admin' && isAdmin && (
-        <div className="bg-white border border-neutral-200 p-12 text-center">
-          <Shield className="h-16 w-16 text-neutral-300 mx-auto mb-6" />
-          <h2 className="text-2xl font-light text-neutral-900 mb-3">Admin Panel</h2>
-          <p className="text-neutral-600">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-soft p-12 text-center">
+          <Shield className="h-16 w-16 text-gray-300 mx-auto mb-6" />
+          <h2 className="text-2xl font-serif text-teal-900 mb-3">Admin Panel</h2>
+          <p className="text-gray-600">
             Approve pending trades and manage platform settings
           </p>
         </div>
@@ -298,10 +304,10 @@ const MinimalTradingPage = () => {
 
       {/* Notifications Tab */}
       {activeTab === 'notifications' && (
-        <div className="bg-white border border-neutral-200 p-12 text-center">
-          <Bell className="h-16 w-16 text-neutral-300 mx-auto mb-6" />
-          <h2 className="text-2xl font-light text-neutral-900 mb-3">Trading Alerts</h2>
-          <p className="text-neutral-600">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-soft p-12 text-center">
+          <Bell className="h-16 w-16 text-gray-300 mx-auto mb-6" />
+          <h2 className="text-2xl font-serif text-teal-900 mb-3">Trading Alerts</h2>
+          <p className="text-gray-600">
             Stay updated on market activity and trade notifications
           </p>
         </div>
@@ -309,10 +315,10 @@ const MinimalTradingPage = () => {
 
       {/* History Tab */}
       {activeTab === 'history' && (
-        <div className="bg-white border border-neutral-200 p-12 text-center">
-          <History className="h-16 w-16 text-neutral-300 mx-auto mb-6" />
-          <h2 className="text-2xl font-light text-neutral-900 mb-3">Trading History</h2>
-          <p className="text-neutral-600">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-soft p-12 text-center">
+          <History className="h-16 w-16 text-gray-300 mx-auto mb-6" />
+          <h2 className="text-2xl font-serif text-teal-900 mb-3">Trading History</h2>
+          <p className="text-gray-600">
             View complete history of all trading transactions
           </p>
         </div>
