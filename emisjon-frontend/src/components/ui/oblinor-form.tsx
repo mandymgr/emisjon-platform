@@ -98,11 +98,8 @@ Label.displayName = LabelPrimitive.Root.displayName;
 // React Hook Form integration
 const Form = FormProvider;
 
-type FormFieldContextValue<
-  TFieldValues extends Record<string, unknown> = Record<string, unknown>,
-  TName extends keyof TFieldValues = keyof TFieldValues
-> = {
-  name: TName;
+type FormFieldContextValue = {
+  name: string;
 };
 
 const FormFieldContext = React.createContext<FormFieldContextValue>(
@@ -110,11 +107,11 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
 );
 
 const FormField = <
-  TFieldValues extends Record<string, unknown> = Record<string, unknown>,
-  TName extends keyof TFieldValues = keyof TFieldValues
+  TFieldValues extends Record<string, any> = Record<string, any>,
+  TName extends string = string
 >({
   ...props
-}: React.ComponentPropsWithoutRef<typeof Controller<TFieldValues, TName>>) => {
+}: any) => {
   return (
     <FormFieldContext.Provider value={{ name: props.name }}>
       <Controller {...props} />

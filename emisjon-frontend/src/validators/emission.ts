@@ -13,8 +13,8 @@ const errorMessages = {
   endAfterStart: "Sluttdato må være etter startdato",
 };
 
-// Base emission schema for creation/editing
-export const emissionSchema = z.object({
+// Base emission schema without refinements
+const baseEmissionSchema = z.object({
   title: z
     .string({
       required_error: errorMessages.required,
@@ -93,7 +93,10 @@ export const emissionSchema = z.object({
 
     riskLevel: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
   }).optional(),
-}).refine((data) => {
+});
+
+// Base emission schema for creation/editing with refinements
+export const emissionSchema = baseEmissionSchema.refine((data) => {
   // Validate that end date is after start date
   const start = new Date(data.startDate);
   const end = new Date(data.endDate);
@@ -104,7 +107,7 @@ export const emissionSchema = z.object({
 });
 
 // Schema for updating emissions (all fields optional except ID)
-export const updateEmissionSchema = emissionSchema.partial();
+export const updateEmissionSchema = baseEmissionSchema.partial();
 
 // Schema for creating emissions (no ID required)
 export const createEmissionSchema = emissionSchema;

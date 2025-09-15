@@ -8,8 +8,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate, Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useNavigate, Link } from "react-router";
 import { Eye, EyeOff, Check, X } from "lucide-react";
 
 // Registration schema with Norwegian validation
@@ -82,7 +81,6 @@ function usePasswordStrength(password: string) {
 
 export default function MinimalRegisterPage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);

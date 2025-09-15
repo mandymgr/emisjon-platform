@@ -87,6 +87,7 @@ export interface UpdateEmissionDTO {
   endDate?: string;
   newSharesOffered?: number;
   pricePerShare?: number;
+  totalValue?: number;
   presentationFileUrl?: string;
   status?: EmissionStatus;
 }
