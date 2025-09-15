@@ -19,7 +19,6 @@ const TradingPage = lazy(() => import('@/features/dashboard/pages/standard/Tradi
 
 // Minimal dashboard pages
 const MinimalDashboardHome = lazy(() => import('@/features/dashboard/pages/minimal/MinimalDashboardHome'));
-const MinimalDashboardHomeShowcase = lazy(() => import('@/features/dashboard/pages/minimal/MinimalDashboardHomeShowcase'));
 const MinimalDashboardHomeKinfolk = lazy(() => import('@/features/dashboard/pages/minimal/MinimalDashboardHomeKinfolk'));
 const MinimalUsersPage = lazy(() => import('@/features/dashboard/pages/minimal/MinimalUsersPage'));
 const MinimalShareholdersPage = lazy(() => import('@/features/dashboard/pages/minimal/MinimalShareholdersPage'));
@@ -57,7 +56,6 @@ export default function App() {
             </ProtectedRoute>
           }>
             <Route index element={<MinimalDashboardHome />} />
-            <Route path="showcase" element={<MinimalDashboardHomeShowcase />} />
             <Route path="kinfolk" element={<MinimalDashboardHomeKinfolk />} />
             <Route path="users" element={<MinimalUsersPage />} />
             <Route path="shareholders" element={<MinimalShareholdersPage />} />

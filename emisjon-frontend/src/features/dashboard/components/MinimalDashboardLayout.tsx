@@ -64,6 +64,57 @@ const MinimalDashboardLayout = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
+  // Breadcrumbs component
+  const Breadcrumbs = () => {
+    const parts = location.pathname.split("/").filter(Boolean);
+
+    const items = parts.map((seg, i) => {
+      const to = "/" + parts.slice(0, i + 1).join("/");
+      const label = seg
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, m => m.toUpperCase())
+        .replace(/Minimal Dashboard/, "Dashboard");
+      const isLast = i === parts.length - 1;
+
+      return (
+        <span key={to} className="flex items-center gap-2 text-sm">
+          {i > 0 && <span className="text-muted-foreground">/</span>}
+          {isLast ? (
+            <span className="text-muted-foreground/70 font-light">{label}</span>
+          ) : (
+            <Link to={to} className="text-sidebar-primary hover:underline font-light">
+              {label}
+            </Link>
+          )}
+        </span>
+      );
+    });
+
+    if (items.length <= 1) return null;
+
+    return (
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1 px-4 py-2 text-xs">
+        {items}
+      </nav>
+    );
+  };
+
+  // Section label component
+  const SectionLabel = ({ children, isActive }: { children: React.ReactNode; isActive?: boolean }) => {
+    if (isSidebarCollapsed) return null;
+    return (
+      <div className="mb-2 flex items-center gap-2 px-3 text-xs uppercase tracking-wider text-muted-foreground">
+        <span>{children}</span>
+        {isActive && (
+          <span
+            aria-hidden="true"
+            className="h-1 w-1 rounded-full bg-sidebar-primary"
+          />
+        )}
+      </div>
+    );
+  };
+
   // Navigation with role-based organization
   const mainNavigation: NavigationItem[] = [
     { name: 'Overview', href: '/minimal-dashboard', icon: LayoutDashboard },
@@ -80,7 +131,6 @@ const MinimalDashboardLayout = () => {
   const adminNavigation: NavigationItem[] = [
     { name: 'Users', href: '/minimal-dashboard/users', icon: Users, requiresAdmin: true, requiresLevel: 2 },
     { name: 'Subscriptions', href: '/minimal-dashboard/subscriptions', icon: BarChart3, requiresAdmin: true, requiresLevel: 3 },
-    { name: 'Design', href: '/minimal-dashboard/showcase', icon: Camera, special: true },
   ];
 
   // Filter navigation based on user permissions
@@ -111,6 +161,11 @@ const MinimalDashboardLayout = () => {
     return false;
   };
 
+  // Check if any navigation items in a section are active
+  const isMainSectionActive = filteredMainNavigation.some(item => isActive(item.href));
+  const isDataSectionActive = filteredDataNavigation.some(item => isActive(item.href));
+  const isAdminSectionActive = filteredAdminNavigation.some(item => isActive(item.href));
+
   const sidebarWidth = isSidebarCollapsed ? 'w-[80px]' : 'w-[260px]';
 
   return (
@@ -135,6 +190,7 @@ const MinimalDashboardLayout = () => {
           `}
           role="navigation"
           aria-label="Main navigation"
+          aria-expanded={!isSidebarCollapsed}
         >
           {/* Desktop collapse toggle */}
           <div className="relative border-b border-sidebar-border">
@@ -204,125 +260,167 @@ const MinimalDashboardLayout = () => {
           {/* Navigation */}
           <nav className={`flex-1 ${isSidebarCollapsed ? 'px-2' : 'px-4'} py-6 space-y-1 overflow-y-auto`}>
             {/* Main Navigation */}
-            {filteredMainNavigation.map((item) => {
+            <section aria-labelledby="main-navigation">
+              <SectionLabel isActive={isMainSectionActive}>
+                <span id="main-navigation">MAIN</span>
+              </SectionLabel>
+              <ul role="list">
+                {filteredMainNavigation.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);
 
               return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  title={isSidebarCollapsed ? item.name : ''}
-                  className={`flex items-center ${isSidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3'} py-2.5 text-sm font-light rounded-lg transition-all duration-200 group ${
-                    active
-                      ? item.special
-                        ? 'bg-accent text-accent-foreground'
-                        : 'bg-sidebar-primary text-sidebar-primary-foreground'
-                      : item.special
-                        ? 'text-accent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                  }`}
-                >
-                  <div className={`flex items-center ${isSidebarCollapsed ? '' : 'space-x-3'}`}>
-                    <Icon className={`h-5 w-5 ${
+                <li key={item.name} className="relative">
+                  {/* Active indicator bar */}
+                  {active && (
+                    <div
+                      className="absolute left-0 top-1/2 h-6 w-0.5 bg-sidebar-primary rounded-r-full -translate-y-1/2"
+                      aria-hidden="true"
+                    />
+                  )}
+
+                  <Link
+                    to={item.href}
+                    title={isSidebarCollapsed ? item.name : ''}
+                    aria-current={active ? "page" : undefined}
+                    className={`flex items-center ${isSidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3'} py-2.5 text-sm font-light rounded-lg transition-all duration-200 group ${
                       active
                         ? item.special
-                          ? 'text-accent-foreground'
-                          : 'text-sidebar-primary-foreground'
+                          ? 'bg-accent text-accent-foreground'
+                          : 'bg-sidebar-primary text-sidebar-primary-foreground'
                         : item.special
-                          ? 'text-accent group-hover:text-accent'
-                          : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground/70'
-                    }`} />
-                    {!isSidebarCollapsed && <span>{item.name}</span>}
-                  </div>
-                  {!isSidebarCollapsed && active && <ChevronRight className="h-4 w-4" />}
-                </Link>
+                          ? 'text-accent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                          : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                    }`}
+                  >
+                    <div className={`flex items-center ${isSidebarCollapsed ? '' : 'space-x-3'}`}>
+                      <Icon className={`h-5 w-5 ${
+                        active
+                          ? item.special
+                            ? 'text-accent-foreground'
+                            : 'text-sidebar-primary-foreground'
+                          : item.special
+                            ? 'text-accent group-hover:text-accent'
+                            : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground/70'
+                      }`} />
+                      {!isSidebarCollapsed && <span>{item.name}</span>}
+                    </div>
+                    {!isSidebarCollapsed && active && <ChevronRight className="h-4 w-4" />}
+                  </Link>
+                </li>
               );
             })}
+              </ul>
+            </section>
 
             {/* Data Navigation */}
             {filteredDataNavigation.length > 0 && (
-              <div className="pt-4">
+              <section aria-labelledby="data-navigation" className="pt-4">
                 {!isSidebarCollapsed && (
                   <div className="border-t border-sidebar-border/50 mb-4"></div>
                 )}
+                <SectionLabel isActive={isDataSectionActive}>
+                  <span id="data-navigation">DATA</span>
+                </SectionLabel>
+                <ul role="list">
                 {filteredDataNavigation.map((item) => {
                   const Icon = item.icon;
                   const active = isActive(item.href);
 
                   return (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      title={isSidebarCollapsed ? item.name : ''}
-                      className={`flex items-center ${isSidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3'} py-2.5 text-sm font-light rounded-lg transition-all duration-200 group ${
-                        active
-                          ? 'bg-sidebar-primary text-sidebar-primary-foreground'
-                          : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                      }`}
-                    >
-                      <div className={`flex items-center ${isSidebarCollapsed ? '' : 'space-x-3'}`}>
-                        <Icon className={`h-5 w-5 ${
+                    <li key={item.name} className="relative">
+                      {/* Active indicator bar */}
+                      {active && (
+                        <div
+                          className="absolute left-0 top-1/2 h-6 w-0.5 bg-sidebar-primary rounded-r-full -translate-y-1/2"
+                          aria-hidden="true"
+                        />
+                      )}
+
+                      <Link
+                        to={item.href}
+                        title={isSidebarCollapsed ? item.name : ''}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex items-center ${isSidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3'} py-2.5 text-sm font-light rounded-lg transition-all duration-200 group ${
                           active
-                            ? 'text-sidebar-primary-foreground'
-                            : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground/70'
-                        }`} />
-                        {!isSidebarCollapsed && <span>{item.name}</span>}
-                      </div>
-                      {!isSidebarCollapsed && active && <ChevronRight className="h-4 w-4" />}
-                    </Link>
+                            ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                            : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                        }`}
+                      >
+                        <div className={`flex items-center ${isSidebarCollapsed ? '' : 'space-x-3'}`}>
+                          <Icon className={`h-5 w-5 ${
+                            active
+                              ? 'text-sidebar-primary-foreground'
+                              : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground/70'
+                          }`} />
+                          {!isSidebarCollapsed && <span>{item.name}</span>}
+                        </div>
+                        {!isSidebarCollapsed && active && <ChevronRight className="h-4 w-4" />}
+                      </Link>
+                    </li>
                   );
                 })}
-              </div>
+                </ul>
+              </section>
             )}
 
             {/* Admin Navigation */}
             {filteredAdminNavigation.length > 0 && (
-              <div className="pt-4">
+              <section aria-labelledby="admin-navigation" className="pt-4">
                 {!isSidebarCollapsed && (
-                  <>
-                    <div className="border-t border-sidebar-border/50 mb-4"></div>
-                    <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                      ADMINISTRATION
-                    </h3>
-                  </>
+                  <div className="border-t border-sidebar-border/50 mb-4"></div>
                 )}
+                <SectionLabel isActive={isAdminSectionActive}>
+                  <span id="admin-navigation">ADMINISTRATION</span>
+                </SectionLabel>
+                <ul role="list" aria-label="Administrator tools">
                 {filteredAdminNavigation.map((item) => {
                   const Icon = item.icon;
                   const active = isActive(item.href);
 
                   return (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      title={isSidebarCollapsed ? item.name : ''}
-                      className={`flex items-center ${isSidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3'} py-2.5 text-sm font-light rounded-lg transition-all duration-200 group ${
-                        active
-                          ? item.special
-                            ? 'bg-accent text-accent-foreground'
-                            : 'bg-sidebar-primary text-sidebar-primary-foreground'
-                          : item.special
-                            ? 'text-accent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                            : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                      }`}
-                    >
-                      <div className={`flex items-center ${isSidebarCollapsed ? '' : 'space-x-3'}`}>
-                        <Icon className={`h-5 w-5 ${
+                    <li key={item.name} className="relative">
+                      {/* Active indicator bar */}
+                      {active && (
+                        <div
+                          className="absolute left-0 top-1/2 h-6 w-0.5 bg-sidebar-primary rounded-r-full -translate-y-1/2"
+                          aria-hidden="true"
+                        />
+                      )}
+
+                      <Link
+                        to={item.href}
+                        title={isSidebarCollapsed ? item.name : ''}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex items-center ${isSidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3'} py-2.5 text-sm font-light rounded-lg transition-all duration-200 group ${
                           active
                             ? item.special
-                              ? 'text-accent-foreground'
-                              : 'text-sidebar-primary-foreground'
+                              ? 'bg-accent text-accent-foreground'
+                              : 'bg-sidebar-primary text-sidebar-primary-foreground'
                             : item.special
-                              ? 'text-accent group-hover:text-accent'
-                              : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground/70'
-                        }`} />
-                        {!isSidebarCollapsed && <span>{item.name}</span>}
-                      </div>
-                      {!isSidebarCollapsed && active && <ChevronRight className="h-4 w-4" />}
-                    </Link>
+                              ? 'text-accent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                              : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                        }`}
+                      >
+                        <div className={`flex items-center ${isSidebarCollapsed ? '' : 'space-x-3'}`}>
+                          <Icon className={`h-5 w-5 ${
+                            active
+                              ? item.special
+                                ? 'text-accent-foreground'
+                                : 'text-sidebar-primary-foreground'
+                              : item.special
+                                ? 'text-accent group-hover:text-accent'
+                                : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground/70'
+                          }`} />
+                          {!isSidebarCollapsed && <span>{item.name}</span>}
+                        </div>
+                        {!isSidebarCollapsed && active && <ChevronRight className="h-4 w-4" />}
+                      </Link>
+                    </li>
                   );
                 })}
-              </div>
+                </ul>
+              </section>
             )}
           </nav>
 
@@ -371,6 +469,7 @@ const MinimalDashboardLayout = () => {
           </div>
 
           <main className="pt-4 pb-8 px-4 sm:px-6 lg:px-8">
+            <Breadcrumbs />
             <Outlet />
           </main>
         </div>
