@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
-import { getAllEmissions } from '../../services/emissionsService';
+import * as emissionsService from '../../services/emissionsService';
 import PageLayout from '@/components/layout/PageLayout';
 import type { Emission } from '@/types/emission';
+import AddEmissionModal from '../../components/AddEmissionModal';
+import EditEmissionModal from '../../components/EditEmissionModal';
+import DeleteEmissionModal from '../../components/DeleteEmissionModal';
+import SubscribeModal from '@/components/emission/SubscribeModal';
+import EmissionDetailsModal from '@/components/emission/EmissionDetailsModal';
+import SuccessDialog from '@/components/ui/SuccessDialog';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import { getTextPreview } from '@/utils/htmlUtils';
 import {
   TrendingUp,
   Calendar,
@@ -30,8 +38,21 @@ interface EmissionStats {
 const MinimalEmissionsPage = () => {
   const { user } = useAppSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [emissions, setEmissions] = useState<Emission[]>([]);
   const [stats, setStats] = useState<EmissionStats | null>(null);
+
+  // Modal states
+  const [showAdd, setShowAdd] = useState(false);
+  const [editTarget, setEditTarget] = useState<Emission | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Emission | null>(null);
+  const [detailsTarget, setDetailsTarget] = useState<Emission | null>(null);
+  const [subscribeTarget, setSubscribeTarget] = useState<Emission | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  // Finalize flow
+  const [showFinalizeModal, setShowFinalizeModal] = useState(false);
+  const [emissionToFinalize, setEmissionToFinalize] = useState<Emission | null>(null);
 
   // Check access - Level 3+ required for emissions OR admin role (admin always has access)
   const hasAccess = user && (user.role === 'ADMIN' || user.level >= 3);
@@ -40,19 +61,25 @@ const MinimalEmissionsPage = () => {
   useEffect(() => {
     if (!hasAccess) return;
 
-    const fetchEmissions = async () => {
+    const load = async () => {
       try {
         setLoading(true);
-        const emissionsData = await getAllEmissions();
-
-        setEmissions(emissionsData);
+        setError(null);
+        const res = await emissionsService.getAllEmissions();
+        const list = Array.isArray(res) ? res : (res?.data ?? []);
+        // Ensure description doesn't break cards
+        const withPreview = list.map((e: Emission) => ({
+          ...e,
+          description: e.description ? getTextPreview(e.description, 220) : '',
+        }));
+        setEmissions(withPreview);
 
         // Calculate stats from real data
-        const activeCount = emissionsData.filter((e: Emission) =>
+        const activeCount = withPreview.filter((e: Emission) =>
           e.status === 'ACTIVE' || e.status === 'PREVIEW'
         ).length;
 
-        const totalValue = emissionsData.reduce((sum: number, e: Emission) => {
+        const totalValue = withPreview.reduce((sum: number, e: Emission) => {
           const shares = typeof e.sharesAvailable === 'number' ? e.sharesAvailable : 0;
           const price = typeof e.pricePerShare === 'number' ? e.pricePerShare : 0;
           const value = shares * price;
@@ -60,19 +87,19 @@ const MinimalEmissionsPage = () => {
         }, 0);
 
         setStats({
-          totalEmissions: emissionsData.length,
+          totalEmissions: withPreview.length,
           activeEmissions: activeCount,
           totalValue: totalValue,
           totalSubscriptions: 0 // This would need subscription data
         });
-      } catch (error) {
-        console.error('Error fetching emissions:', error);
+      } catch (e: any) {
+        setError(e?.response?.data?.error || 'Could not fetch emissions');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEmissions();
+    load();
   }, [hasAccess]);
 
   if (!hasAccess) {
@@ -125,7 +152,10 @@ const MinimalEmissionsPage = () => {
   };
 
   const actions = isAdmin ? (
-    <button className="bg-teal-700 hover:bg-teal-900 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors">
+    <button
+      onClick={() => setShowAdd(true)}
+      className="bg-teal-700 hover:bg-teal-900 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors"
+    >
       <Plus className="h-4 w-4" />
       <span>New Emission</span>
     </button>
@@ -272,6 +302,7 @@ const MinimalEmissionsPage = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <button
+                            onClick={() => setDetailsTarget(emission)}
                             className="text-gray-600 hover:text-teal-700 transition-colors"
                             title="View details"
                           >
@@ -279,6 +310,7 @@ const MinimalEmissionsPage = () => {
                           </button>
                           {emission.documents && emission.documents.length > 0 && (
                             <button
+                              onClick={() => setDetailsTarget(emission)}
                               className="text-gray-600 hover:text-teal-700 transition-colors"
                               title="View documents"
                             >
@@ -288,12 +320,14 @@ const MinimalEmissionsPage = () => {
                           {isAdmin && (
                             <>
                               <button
+                                onClick={() => setEditTarget(emission)}
                                 className="text-gray-600 hover:text-teal-700 transition-colors"
                                 title="Edit emission"
                               >
                                 <Edit className="h-4 w-4" />
                               </button>
                               <button
+                                onClick={() => setDeleteTarget(emission)}
                                 className="text-gray-600 hover:text-red-600 transition-colors"
                                 title="Delete emission"
                               >
@@ -302,7 +336,10 @@ const MinimalEmissionsPage = () => {
                             </>
                           )}
                           {emission.status === 'ACTIVE' && (
-                            <button className="px-3 py-1 bg-teal-700 text-white text-xs hover:bg-teal-800 transition-colors rounded-lg">
+                            <button
+                              onClick={() => setSubscribeTarget(emission)}
+                              className="px-3 py-1 bg-teal-700 text-white text-xs hover:bg-teal-800 transition-colors rounded-lg"
+                            >
                               Subscribe
                             </button>
                           )}
@@ -329,6 +366,121 @@ const MinimalEmissionsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      {showAdd && (
+        <AddEmissionModal
+          isOpen={showAdd}
+          onClose={() => setShowAdd(false)}
+          onSuccess={() => {
+            setShowAdd(false);
+            setSuccessMsg('Emission created successfully');
+            load();
+          }}
+        />
+      )}
+
+      {editTarget && (
+        <EditEmissionModal
+          isOpen={!!editTarget}
+          emission={editTarget}
+          onClose={() => setEditTarget(null)}
+          onSuccess={() => {
+            setEditTarget(null);
+            setSuccessMsg('Emission updated successfully');
+            load();
+          }}
+        />
+      )}
+
+      {deleteTarget && (
+        <DeleteEmissionModal
+          isOpen={!!deleteTarget}
+          emission={deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={async () => {
+            if (!deleteTarget) return;
+            try {
+              await emissionsService.deleteEmission(deleteTarget.id);
+              setDeleteTarget(null);
+              setSuccessMsg('Emission deleted successfully');
+              load();
+            } catch (e: any) {
+              setSuccessMsg('Could not delete emission');
+            }
+          }}
+        />
+      )}
+
+      {subscribeTarget && (
+        <SubscribeModal
+          isOpen={!!subscribeTarget}
+          emission={{
+            id: subscribeTarget.id,
+            title: subscribeTarget.title,
+            pricePerShare: subscribeTarget.pricePerShare,
+            newSharesOffered: subscribeTarget.newSharesOffered,
+          }}
+          onClose={() => setSubscribeTarget(null)}
+          onSuccess={() => {
+            setSubscribeTarget(null);
+            setSuccessMsg('Subscription submitted for review');
+            load();
+          }}
+        />
+      )}
+
+      {detailsTarget && (
+        <EmissionDetailsModal
+          isOpen={!!detailsTarget}
+          emission={detailsTarget}
+          onClose={() => setDetailsTarget(null)}
+          onSubscribe={() => setSubscribeTarget(detailsTarget!)}
+          onComplete={() => {
+            setDetailsTarget(null);
+            load();
+          }}
+          onEdit={isAdmin ? () => setEditTarget(detailsTarget!) : undefined}
+          onDelete={isAdmin ? () => setDeleteTarget(detailsTarget!) : undefined}
+          onFinalize={isAdmin ? () => {
+            setEmissionToFinalize(detailsTarget!);
+            setShowFinalizeModal(true);
+          } : undefined}
+        />
+      )}
+
+      {showFinalizeModal && emissionToFinalize && (
+        <ConfirmationModal
+          isOpen={showFinalizeModal}
+          title="Finalize Emission"
+          message={`Are you sure you want to finalize "${emissionToFinalize.title}"? This action cannot be undone.`}
+          confirmLabel="Finalize"
+          onConfirm={async () => {
+            try {
+              await emissionsService.finalizeEmission(emissionToFinalize.id);
+              setShowFinalizeModal(false);
+              setEmissionToFinalize(null);
+              setSuccessMsg('Emission finalized successfully');
+              load();
+            } catch (e: any) {
+              setSuccessMsg('Could not finalize emission');
+            }
+          }}
+          onCancel={() => {
+            setShowFinalizeModal(false);
+            setEmissionToFinalize(null);
+          }}
+        />
+      )}
+
+      {successMsg && (
+        <SuccessDialog
+          isOpen={!!successMsg}
+          title="Success"
+          message={successMsg}
+          onClose={() => setSuccessMsg(null)}
+        />
+      )}
     </PageLayout>
   );
 };

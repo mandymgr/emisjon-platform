@@ -239,12 +239,19 @@ const MinimalDashboardHome = () => {
               className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-left w-full rounded-2xl group"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className="bg-teal-100 p-3 rounded-xl">
-                  <Icon className="h-5 w-5 text-teal-700 group-hover:text-teal-900" />
+                <div className="p-3 relative">
+                  <Icon className="h-5 w-5 text-gray-900" />
+                  {/* Blinking indicator for active items */}
+                  {stat.value > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-500 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-600"></span>
+                    </span>
+                  )}
                 </div>
                 {stat.change !== 0 && (
                   <div className={`flex items-center space-x-1 text-xs font-light ${
-                    stat.change > 0 ? 'text-green-600' : 'text-red-600'
+                    stat.change > 0 ? 'text-teal-600' : 'text-red-600'
                   }`}>
                     {stat.change > 0 ? (
                       <ArrowUpRight className="h-4 w-4" />
@@ -359,7 +366,7 @@ const MinimalDashboardHome = () => {
               {activeEmissions.slice(0, 3).map((emission: any) => (
                 <div key={emission.id} className="bg-card border border-border p-6 rounded-lg">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-xs font-light text-green-700 dark:text-green-400 uppercase tracking-wider rounded-md">
+                    <div className="px-2 py-1 bg-teal-100 dark:bg-teal-900/30 text-xs font-light text-teal-700 dark:text-teal-400 uppercase tracking-wider rounded-md">
                       Active
                     </div>
                     <Activity className="h-5 w-5 text-muted-foreground" />
@@ -394,7 +401,7 @@ const MinimalDashboardHome = () => {
 
                   <div className="bg-muted h-2 mb-4 rounded-full">
                     <div
-                      className="bg-green-500 dark:bg-green-400 h-2 transition-all duration-300 rounded-full"
+                      className="bg-teal-500 dark:bg-teal-400 h-2 transition-all duration-300 rounded-full"
                       style={{
                         width: `${emission.targetAmount > 0
                           ? Math.min((emission.currentAmount / emission.targetAmount) * 100, 100)
@@ -422,39 +429,39 @@ const MinimalDashboardHome = () => {
       {/* Quick Actions */}
       <div className="mb-16">
         <h2 className="font-serif text-3xl text-teal-900 mb-8">Hurtighandlinger</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className={`grid gap-6 ${user && user.level >= 3 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 lg:grid-cols-3'}`}>
           {user && user.level >= 2 && (
             <button
               onClick={() => navigate('/minimal-dashboard/shareholders')}
-              className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-center rounded-2xl group"
+              className="bg-white border border-gray-200 p-8 hover:shadow-soft transition-all text-center rounded-2xl group min-h-[180px] flex flex-col justify-center"
             >
-              <Plus className="h-8 w-8 text-teal-700 group-hover:text-teal-900 mx-auto mb-3" />
-              <p className="text-sm font-light text-card-foreground mb-1">Add Shareholder</p>
-              <p className="text-xs font-light text-muted-foreground">Manage ownership</p>
+              <Plus className="h-10 w-10 text-gray-900 mx-auto mb-4" />
+              <p className="text-base font-light text-card-foreground mb-2">Add Shareholder</p>
+              <p className="text-sm font-light text-muted-foreground">Manage ownership</p>
             </button>
           )}
 
           {user && user.level >= 3 && (
             <button
               onClick={() => navigate('/minimal-dashboard/emissions')}
-              className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-center rounded-2xl group"
+              className="bg-white border border-gray-200 p-8 hover:shadow-soft transition-all text-center rounded-2xl group min-h-[180px] flex flex-col justify-center"
             >
-              <Send className="h-8 w-8 text-teal-700 group-hover:text-teal-900 mx-auto mb-3" />
-              <p className="text-sm font-light text-card-foreground mb-1">Create Emission</p>
-              <p className="text-xs font-light text-muted-foreground">New investment round</p>
+              <Send className="h-10 w-10 text-gray-900 mx-auto mb-4" />
+              <p className="text-base font-light text-card-foreground mb-2">Create Emission</p>
+              <p className="text-sm font-light text-muted-foreground">New investment round</p>
             </button>
           )}
 
-          <button className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-center rounded-2xl group">
-            <FileText className="h-8 w-8 text-teal-700 group-hover:text-teal-900 mx-auto mb-3" />
-            <p className="text-sm font-light text-card-foreground mb-1">Generate Report</p>
-            <p className="text-xs font-light text-muted-foreground">Export data</p>
+          <button className="bg-white border border-gray-200 p-8 hover:shadow-soft transition-all text-center rounded-2xl group min-h-[180px] flex flex-col justify-center">
+            <FileText className="h-10 w-10 text-gray-900 mx-auto mb-4" />
+            <p className="text-base font-light text-card-foreground mb-2">Generate Report</p>
+            <p className="text-sm font-light text-muted-foreground">Export data</p>
           </button>
 
-          <button className="bg-white border border-gray-200 p-6 hover:shadow-soft transition-all text-center rounded-2xl group">
-            <Bell className="h-8 w-8 text-teal-700 group-hover:text-teal-900 mx-auto mb-3" />
-            <p className="text-sm font-light text-card-foreground mb-1">Notifications</p>
-            <p className="text-xs font-light text-muted-foreground">Stay updated</p>
+          <button className="bg-white border border-gray-200 p-8 hover:shadow-soft transition-all text-center rounded-2xl group min-h-[180px] flex flex-col justify-center">
+            <Bell className="h-10 w-10 text-gray-900 mx-auto mb-4" />
+            <p className="text-base font-light text-card-foreground mb-2">Notifications</p>
+            <p className="text-sm font-light text-muted-foreground">Stay updated</p>
           </button>
         </div>
       </div>
@@ -543,7 +550,10 @@ const MinimalDashboardHome = () => {
 
                 return (
                   <div key={activity.id} className="flex items-start space-x-4">
-                    <div className={`h-3 w-3 ${getActivityColor(activity.type)} rounded-full mt-1`} />
+                    <div className="relative flex h-3 w-3 mt-1">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-500 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-600"></span>
+                    </div>
                     <div className="flex-1">
                       <p className="text-base font-light text-card-foreground">{activity.description}</p>
                       <p className="text-sm font-light text-muted-foreground">{getTimeAgo(activity.timestamp)}</p>
