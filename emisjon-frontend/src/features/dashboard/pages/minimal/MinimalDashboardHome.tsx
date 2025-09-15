@@ -163,7 +163,7 @@ const MinimalDashboardHome = () => {
         subtitle="Laster dashboard-data..."
       >
         <div className="flex items-center justify-center h-96">
-          <Loader2 className="h-8 w-8 animate-spin text-sidebar-foreground/70" />
+          <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
         </div>
       </PageLayout>
     );
@@ -246,7 +246,7 @@ const MinimalDashboardHome = () => {
               )}
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3">
-                  <Icon className="h-5 w-5 text-sidebar-foreground/70" />
+                  <Icon className="h-5 w-5 text-gray-600" />
                 </div>
                 {stat.change !== 0 && (
                   <div className={`flex items-center space-x-1 text-xs font-light px-3 py-1 bg-gray-100 rounded-md ${
@@ -356,7 +356,7 @@ const MinimalDashboardHome = () => {
               className="text-sm font-light text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider flex items-center space-x-1"
             >
               <span>View all</span>
-              <ExternalLink className="h-3 w-3 text-sidebar-foreground/70" />
+              <ExternalLink className="h-3 w-3 text-gray-600" />
             </button>
           </div>
 
@@ -368,7 +368,7 @@ const MinimalDashboardHome = () => {
                     <div className="px-2 py-1 bg-teal-100 dark:bg-teal-900/30 text-xs font-light text-teal-700 dark:text-teal-400 uppercase tracking-wider rounded-md">
                       Active
                     </div>
-                    <Activity className="h-5 w-5 text-sidebar-foreground/70" />
+                    <Activity className="h-5 w-5 text-gray-600" />
                   </div>
 
                   <h3 className="text-lg font-light text-card-foreground mb-2">
@@ -434,7 +434,7 @@ const MinimalDashboardHome = () => {
               onClick={() => navigate('/minimal-dashboard/shareholders')}
               className="bg-white border border-gray-200 p-8 hover:shadow-soft transition-all text-center rounded-2xl group min-h-[180px] flex flex-col justify-center relative"
             >
-              <Building2 className="h-5 w-5 text-sidebar-foreground/70 mx-auto mb-4" />
+              <Building2 className="h-5 w-5 text-gray-600 mx-auto mb-4" />
               <p className="text-base font-light text-card-foreground mb-2">Add Shareholder</p>
               <p className="text-sm font-light text-muted-foreground">Manage ownership</p>
             </button>
@@ -445,20 +445,20 @@ const MinimalDashboardHome = () => {
               onClick={() => navigate('/minimal-dashboard/emissions')}
               className="bg-white border border-gray-200 p-8 hover:shadow-soft transition-all text-center rounded-2xl group min-h-[180px] flex flex-col justify-center relative"
             >
-              <TrendingUp className="h-5 w-5 text-sidebar-foreground/70 mx-auto mb-4" />
+              <TrendingUp className="h-5 w-5 text-gray-600 mx-auto mb-4" />
               <p className="text-base font-light text-card-foreground mb-2">Create Emission</p>
               <p className="text-sm font-light text-muted-foreground">New investment round</p>
             </button>
           )}
 
           <button className="bg-white border border-gray-200 p-8 hover:shadow-soft transition-all text-center rounded-2xl group min-h-[180px] flex flex-col justify-center relative">
-            <FileText className="h-5 w-5 text-sidebar-foreground/70 mx-auto mb-4" />
+            <FileText className="h-5 w-5 text-gray-600 mx-auto mb-4" />
             <p className="text-base font-light text-card-foreground mb-2">Generate Report</p>
             <p className="text-sm font-light text-muted-foreground">Export data</p>
           </button>
 
           <button className="bg-white border border-gray-200 p-8 hover:shadow-soft transition-all text-center rounded-2xl group min-h-[180px] flex flex-col justify-center relative">
-            <Bell className="h-5 w-5 text-sidebar-foreground/70 mx-auto mb-4" />
+            <Bell className="h-5 w-5 text-gray-600 mx-auto mb-4" />
             <p className="text-base font-light text-card-foreground mb-2">Notifications</p>
             <p className="text-sm font-light text-muted-foreground">Stay updated</p>
           </button>
@@ -476,7 +476,7 @@ const MinimalDashboardHome = () => {
               className="text-sm font-light text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider flex items-center space-x-1"
             >
               <span>View all</span>
-              <ExternalLink className="h-3 w-3 text-sidebar-foreground/70" />
+              <ExternalLink className="h-3 w-3 text-gray-600" />
             </button>
           </div>
 
@@ -525,7 +525,7 @@ const MinimalDashboardHome = () => {
               recentActivities.map((activity) => {
                 const getActivityColor = (type: string) => {
                   switch (type) {
-                    case 'emission_created': return 'bg-green-500';
+                    case 'emission_created': return 'bg-gray-500';
                     case 'shareholder_added': return 'bg-blue-500';
                     case 'subscription_approved': return 'bg-yellow-500';
                     case 'trading_completed': return 'bg-purple-500';

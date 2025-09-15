@@ -111,7 +111,7 @@ const MinimalMySubscriptionsPage = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'PENDING': return <Clock className="h-4 w-4 text-yellow-600" />;
-      case 'APPROVED': return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'APPROVED': return <CheckCircle className="h-4 w-4 text-gray-600" />;
       case 'REJECTED': return <XCircle className="h-4 w-4 text-red-600" />;
       case 'COMPLETED': return <CheckCircle className="h-4 w-4 text-blue-600" />;
       default: return <AlertCircle className="h-4 w-4 text-neutral-600" />;
@@ -121,7 +121,7 @@ const MinimalMySubscriptionsPage = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING': return 'bg-yellow-100 text-yellow-800';
-      case 'APPROVED': return 'bg-green-100 text-green-800';
+      case 'APPROVED': return 'bg-gray-100 text-black';
       case 'REJECTED': return 'bg-red-100 text-red-800';
       case 'COMPLETED': return 'bg-blue-100 text-blue-800';
       default: return 'bg-neutral-100 text-neutral-800';
@@ -159,7 +159,7 @@ const MinimalMySubscriptionsPage = () => {
         <div className="bg-white border border-neutral-200 p-8">
           <div className="flex items-center justify-between mb-6">
             <TrendingUp className="h-6 w-6 text-neutral-600" />
-            <ArrowUpRight className="h-4 w-4 text-green-600" />
+            <ArrowUpRight className="h-4 w-4 text-gray-600" />
           </div>
           <p className="text-sm text-neutral-600 mb-2">Active</p>
           <p className="text-3xl font-light text-neutral-900">

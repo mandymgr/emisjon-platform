@@ -10,7 +10,10 @@ import {
   Trash2,
   UserX,
   Download,
-  Loader2
+  Loader2,
+  Users,
+  Shield,
+  TrendingUp
 } from 'lucide-react';
 
 interface User {
@@ -121,14 +124,14 @@ const MinimalUsersPage = () => {
         subtitle="Laster brukere..."
       >
         <div className="flex items-center justify-center h-96">
-          <Loader2 className="h-8 w-8 animate-spin text-teal-700" />
+          <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
         </div>
       </PageLayout>
     );
   }
 
   const actions = (
-    <button className="bg-sidebar-primary hover:bg-sidebar-primary/90 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors">
+    <button className="bg-sidebar-primary hover:bg-sidebar-primary/90 text-white px-6 py-3 flex items-center space-x-2 transition-colors">
       <Plus className="h-4 w-4" />
       <span>Ny bruker</span>
     </button>
@@ -140,6 +143,57 @@ const MinimalUsersPage = () => {
       subtitle={`Administrer brukerkontoer og tillatelser (${filteredUsers.length} brukere)`}
       actions={actions}
     >
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+        <div className="bg-white border border-gray-200 p-8 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3">
+              <Users className="h-5 w-5 text-gray-600" />
+            </div>
+          </div>
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Users</p>
+          <p className="text-3xl font-serif text-teal-900">
+            {users.length}
+          </p>
+        </div>
+
+        <div className="bg-white border border-gray-200 p-8 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3">
+              <UserX className="h-5 w-5 text-gray-600" />
+            </div>
+          </div>
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Active Users</p>
+          <p className="text-3xl font-serif text-teal-900">
+            {users.filter(u => u.isActive).length}
+          </p>
+        </div>
+
+        <div className="bg-white border border-gray-200 p-8 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3">
+              <Shield className="h-5 w-5 text-gray-600" />
+            </div>
+          </div>
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Admin Users</p>
+          <p className="text-3xl font-serif text-teal-900">
+            {users.filter(u => u.role === 'ADMIN').length}
+          </p>
+        </div>
+
+        <div className="bg-white border border-gray-200 p-8 rounded-2xl shadow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3">
+              <TrendingUp className="h-5 w-5 text-gray-600" />
+            </div>
+          </div>
+          <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Level 3 Users</p>
+          <p className="text-3xl font-serif text-teal-900">
+            {users.filter(u => u.level >= 3).length}
+          </p>
+        </div>
+      </div>
+
       {/* Filtre */}
       <div className="bg-white border border-gray-200 p-6 mb-8 rounded-2xl shadow-soft">
         <div className="flex flex-col lg:flex-row lg:items-center gap-6">
@@ -194,7 +248,7 @@ const MinimalUsersPage = () => {
                 type="checkbox"
                 checked={selectedUsers.size === filteredUsers.length && filteredUsers.length > 0}
                 onChange={selectAllUsers}
-                className="h-4 w-4 text-teal-700 border-gray-300 rounded focus:ring-2 focus:ring-teal-500"
+                className="h-4 w-4 text-neutral-600 border-gray-300 focus:ring-0"
               />
               <span className="text-sm text-gray-600 font-light uppercase tracking-wider">
                 {selectedUsers.size > 0 ? `${selectedUsers.size} valgt` : `${filteredUsers.length} brukere`}
@@ -241,7 +295,7 @@ const MinimalUsersPage = () => {
                       type="checkbox"
                       checked={selectedUsers.has(user.id)}
                       onChange={() => toggleUserSelection(user.id)}
-                      className="h-4 w-4 text-teal-700 border-gray-300 focus:ring-0"
+                      className="h-4 w-4 text-neutral-600 border-gray-300 focus:ring-0"
                     />
                   </td>
                   <td className="px-6 py-4">
@@ -274,7 +328,7 @@ const MinimalUsersPage = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-2">
                       <div className={`h-2 w-2 rounded-full ${
-                        user.isActive ? 'bg-green-500' : 'bg-black'
+                        user.isActive ? 'bg-gray-500' : 'bg-black'
                       }`} />
                       <span className="text-sm text-gray-600">
                         {user.isActive ? 'Aktiv' : 'Inaktiv'}
@@ -289,13 +343,13 @@ const MinimalUsersPage = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-2">
-                      <button className="text-gray-400 hover:text-teal-600 transition-colors">
+                      <button className="text-gray-400 hover:text-black transition-colors">
                         <Edit3 className="h-4 w-4" />
                       </button>
                       <button className="text-gray-400 hover:text-black transition-colors">
                         <Trash2 className="h-4 w-4" />
                       </button>
-                      <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                      <button className="text-gray-400 hover:text-black transition-colors">
                         <MoreHorizontal className="h-4 w-4" />
                       </button>
                     </div>

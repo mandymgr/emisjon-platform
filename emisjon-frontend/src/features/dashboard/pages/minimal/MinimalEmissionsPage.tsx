@@ -135,7 +135,7 @@ const MinimalEmissionsPage = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PREVIEW': return 'bg-yellow-100 text-yellow-800';
-      case 'ACTIVE': return 'bg-green-100 text-green-800';
+      case 'ACTIVE': return 'bg-gray-100 text-black';
       case 'COMPLETED': return 'bg-blue-100 text-blue-800';
       case 'FINALIZED': return 'bg-neutral-100 text-neutral-800';
       default: return 'bg-neutral-100 text-neutral-800';
@@ -172,7 +172,7 @@ const MinimalEmissionsPage = () => {
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 relative">
-              <Activity className="h-5 w-5 text-sidebar-foreground/70" />
+              <Activity className="h-5 w-5 text-gray-600" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Emissions</p>
@@ -184,7 +184,7 @@ const MinimalEmissionsPage = () => {
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 relative">
-              <TrendingUp className="h-5 w-5 text-sidebar-foreground/70" />
+              <TrendingUp className="h-5 w-5 text-gray-600" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Active</p>
@@ -196,7 +196,7 @@ const MinimalEmissionsPage = () => {
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 relative">
-              <DollarSign className="h-5 w-5 text-sidebar-foreground/70" />
+              <DollarSign className="h-5 w-5 text-gray-600" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Value</p>
@@ -208,7 +208,7 @@ const MinimalEmissionsPage = () => {
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 relative">
-              <Users className="h-5 w-5 text-sidebar-foreground/70" />
+              <Users className="h-5 w-5 text-gray-600" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Subscriptions</p>
@@ -325,7 +325,7 @@ const MinimalEmissionsPage = () => {
                               </button>
                               <button
                                 onClick={() => setDeleteTarget(emission)}
-                                className="text-gray-600 hover:text-black transition-colors"
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
                                 title="Delete emission"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -439,6 +439,15 @@ const MinimalEmissionsPage = () => {
           }}
           onEdit={isAdmin ? () => setEditTarget(detailsTarget!) : undefined}
           onDelete={isAdmin ? () => setDeleteTarget(detailsTarget!) : undefined}
+          onActivate={isAdmin ? async () => {
+            try {
+              await emissionsService.activateEmission?.(detailsTarget!.id);
+              setSuccessMsg('Emission activated successfully');
+              load();
+            } catch (e: any) {
+              setSuccessMsg('Could not activate emission');
+            }
+          } : undefined}
           onFinalize={isAdmin ? () => {
             setEmissionToFinalize(detailsTarget!);
             setShowFinalizeModal(true);

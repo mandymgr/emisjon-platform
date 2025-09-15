@@ -52,7 +52,7 @@ export default function ShareholderTableRow({
             </button>
             <button 
               onClick={() => onDelete(shareholder)}
-              className="text-red-600 hover:text-red-700 flex items-center space-x-1 cursor-pointer"
+              className="text-black hover:text-gray-800 flex items-center space-x-1 cursor-pointer"
             >
               <FiTrash2 size={16} />
               <span>Slett</span>

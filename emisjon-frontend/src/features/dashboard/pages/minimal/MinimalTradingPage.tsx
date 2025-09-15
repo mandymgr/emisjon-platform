@@ -186,7 +186,7 @@ const MinimalTradingPage = () => {
             <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 relative">
-                  <Activity className="h-5 w-5 text-sidebar-foreground/70" />
+                  <Activity className="h-5 w-5 text-gray-600" />
                 </div>
               </div>
               <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Trades</p>
@@ -198,7 +198,7 @@ const MinimalTradingPage = () => {
             <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 relative">
-                  <TrendingUp className="h-5 w-5 text-sidebar-foreground/70" />
+                  <TrendingUp className="h-5 w-5 text-gray-600" />
                 </div>
               </div>
               <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Volume</p>
@@ -210,7 +210,7 @@ const MinimalTradingPage = () => {
             <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 relative">
-                  <DollarSign className="h-5 w-5 text-sidebar-foreground/70" />
+                  <DollarSign className="h-5 w-5 text-gray-600" />
                 </div>
               </div>
               <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Avg. Price</p>
@@ -222,7 +222,7 @@ const MinimalTradingPage = () => {
             <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 relative">
-                  <Users className="h-5 w-5 text-sidebar-foreground/70" />
+                  <Users className="h-5 w-5 text-gray-600" />
                 </div>
               </div>
               <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Active Orders</p>

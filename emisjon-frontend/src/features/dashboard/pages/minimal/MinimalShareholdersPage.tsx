@@ -267,7 +267,7 @@ const MinimalShareholdersPage = () => {
       onClick={() => setShowAddModal(true)}
       className="bg-sidebar-primary hover:bg-sidebar-primary/90 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-colors"
     >
-      <Plus className="h-4 w-4 text-sidebar-foreground/70" />
+      <Plus className="h-4 w-4 text-gray-600" />
       <span>Add Shareholder</span>
     </Button>
   ) : null;
@@ -290,7 +290,7 @@ const MinimalShareholdersPage = () => {
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 relative">
-              <Users className="h-5 w-5 text-sidebar-foreground/70" />
+              <Users className="h-5 w-5 text-gray-600" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Shareholders</p>
@@ -302,7 +302,7 @@ const MinimalShareholdersPage = () => {
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 relative">
-              <TrendingUp className="h-5 w-5 text-sidebar-foreground/70" />
+              <TrendingUp className="h-5 w-5 text-gray-600" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Total Shares</p>
@@ -314,7 +314,7 @@ const MinimalShareholdersPage = () => {
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 relative">
-              <Building2 className="h-5 w-5 text-sidebar-foreground/70" />
+              <Building2 className="h-5 w-5 text-gray-600" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Active Investors</p>
@@ -326,7 +326,7 @@ const MinimalShareholdersPage = () => {
         <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 relative">
-              <Calendar className="h-5 w-5 text-sidebar-foreground/70" />
+              <Calendar className="h-5 w-5 text-gray-600" />
             </div>
           </div>
           <p className="text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">Avg. Shares</p>
@@ -348,7 +348,7 @@ const MinimalShareholdersPage = () => {
       {/* Error Display */}
       {error && (
         <div className="mb-6">
-          <div className="rounded-xl border border-gray-300 bg-gray-50 text-black p-4">
+          <div className="rounded-xl border border-gray-300 bg-gray-50 text-gray-600 p-4">
             {error}
           </div>
         </div>
